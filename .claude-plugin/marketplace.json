@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Ritual de início e fim de sessão para Claude Code.",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   "plugins": [
     {
       "name": "session-ritual",
       "source": "./",
       "description": "Briefing ao começar, registro + commit ao encerrar — SESSION_STATE.md e SESSION_LOG.md no próprio repo.",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": {
         "name": "Camarota-234"
       },
