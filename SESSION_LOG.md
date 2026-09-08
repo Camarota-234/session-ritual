@@ -1,5 +1,12 @@
 # Log de sessões — session-ritual
 
+## 2026-09-08 — v1.2.0: fim leve por padrão, checkpoint e teto do STATE
+- **Feito:** `scripts/session-start.ps1` (pull, `status -sb` com ahead/behind, últimos commits, do repo e dos irmãos lidos de `**Repos-irmãos:**`), testado em quatro cenários. `SKILL.md` reescrito: início por script, `/session-checkpoint`, fim leve/completo com o gatilho de 7 dias, regras de dieta do STATE (teto 120), extensão em três seções com compatibilidade para `## Fim`. README e manifests 1.2.0.
+- **De onde veio:** leitura dos quatro repos da Avex na volta das férias. O STATE do Constance tinha 569 linhas (40 KB); o fim de sessão fazia 12 passos, dos quais 3 eram o ritual; havia até 4 "partes" por dia no mesmo repo; e entre 24 e 28/08 foram 8 pendências herdadas que se revelaram falsas — o STATE virou narrativa que ninguém reconfere.
+- **Decisões:** graphify sai do ritual (caro, adiado três dias seguidos, export degradou o vault três vezes); 120 linhas como teto porque abaixo disso a foto cabe numa leitura; o fim completo é por data, não por reflexo, e a skill decide e avisa em vez de perguntar; o script não roda testes nem sobe nada — só lê e puxa.
+- **Feito, não exercitado:** nenhuma sessão real fechou com a 1.2.0.
+- **Pendências:** as duas de validação (sem extend; `skill-creator`) seguem; a primeira sessão real da 1.2.0 é o teste.
+
 ## 2026-08-24 (parte 2) — A v1.1.0 fecha a sessão que a gerou, em dois repos
 - **Feito:** o `/session-end` da mesma sessão rodou já na v1.1.0, sobre os dois repos do SegurIA. As seis regras foram exercitadas: `ultima-sessao` no frontmatter dos dois `SESSION_STATE.md`, escopo e repos-irmãos no topo de cada um, pendências marcadas medida/suposta, `Feito` com evidência separado do que ficou sem exercício, e o STATE reescrito como foto do agora — os itens fechados durante o dia saíram em vez de virarem lista de riscados.
 - **O que a regra de multi-repo evitou na prática:** pendência do runtime não foi duplicada no STATE do painel; cada uma ficou no repo que consegue fechá-la, com ponteiro cruzado. Sem isso, os dois arquivos teriam divergido no mesmo dia — houve pendência fechada de um lado e aberta do outro.
