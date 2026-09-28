@@ -34,11 +34,13 @@ A extensão pessoal do autor mora em `Camarota-234/claude-config`
 - **(medida, desde 08/09)** `skill-creator` (evals + description) não passou neste repo.
 - **(suposta, desde 16/08)** A `description` do frontmatter pode não aparecer inteira
   na listagem de skills.
-- **(medida, desde 28/09)** A 1.3.0 não abriu nem fechou sessão real ainda. O modo
-  "foco declarado" e o `Resumo` no LOG só se provam em uso.
+- **(medida, desde 28/09)** A 1.3.0 está instalada (cache `1.3.0`, reinstalada em
+  28/09) mas não abriu nem fechou sessão real pela skill: o fechamento de 28/09 seguiu
+  o `SKILL.md` à mão, porque a sessão nasceu com a 1.2.0 carregada. O modo "foco
+  declarado" e o `Resumo` no LOG só se provam em uso.
 
 ## Próxima sessão
-1. Reinstalar (`/plugin marketplace update session-ritual`, uninstall, install) e usar
-   a 1.3.0 nos repos da Avex; anotar se o briefing com foco ficou curto demais.
+1. Usar a 1.3.0 nos repos da Avex (já reinstalada); anotar se o briefing com foco
+   ficou curto demais e se o aviso de commits depois do fechamento disparou certo.
 2. Rodar a validação sem `ritual-extend.md`.
 3. Passar o `skill-creator` antes de divulgar aos colegas.
