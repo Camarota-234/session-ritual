@@ -1,5 +1,13 @@
 # Log de sessões — session-ritual
 
+## 2026-09-28 — v1.3.0: início com foco, detecção de sessão não fechada, Resumo no LOG
+- **Resumo:** o ritual passa a servir a sessão que já chega com foco, avisa quando o STATE ficou para trás, e troca cobrança por data por ordem de execução.
+- **Feito:** `SKILL.md` com os dois modos de início (foco declarado / sem foco, com o item 1 do planejado proposto), seção "Durante a sessão" (pendência fechada sai na hora), `Resumo` obrigatório no LOG e leitura parcial no início, `(desde DD/MM)` e `(aguardando <quem>)` nas pendências. `session-start.ps1` imprime os commits posteriores a `ultima-sessao` — testado no Constance (nenhum), em pasta sem git e neste repo. README e manifests 1.3.0.
+- **De onde veio:** leitura do FGSD (`VancheeZze/FGSD`, sistema de coaching com CONTEXT/GOALS/TODO e manutenção contínua) contra os repos da Avex: STATE do Constance em 117 linhas, LOG em 844 com entradas de 40 linhas de prosa que o início lia inteiras, e o `plano.md` do vault cravando go-live já passado enquanto o STATE dizia outra coisa. Do FGSD entraram manutenção contínua, abrir com direção e uma fonte por tipo de informação; persona, cobrança por prazo e catálogo de autossabotagem ficaram de fora.
+- **Decisões:** data em pendência não vira gatilho de nada — atraso de cliente é normal e cobrança por idade só estressa; a ordem de "Próxima sessão" é o único critério. Risco e "em espera" saem do `sprints.md` do vault (mudança na extensão pessoal, não no plugin).
+- **Feito, não exercitado:** nenhuma sessão real abriu ou fechou com a 1.3.0.
+- **Pendências:** as de validação (sem extend; `skill-creator`) seguem desde 08/09; usar a 1.3.0 uma semana antes de mexer de novo.
+
 ## 2026-09-08 — v1.2.0: fim leve por padrão, checkpoint e teto do STATE
 - **Feito:** `scripts/session-start.ps1` (pull, `status -sb` com ahead/behind, últimos commits, do repo e dos irmãos lidos de `**Repos-irmãos:**`), testado em quatro cenários. `SKILL.md` reescrito: início por script, `/session-checkpoint`, fim leve/completo com o gatilho de 7 dias, regras de dieta do STATE (teto 120), extensão em três seções com compatibilidade para `## Fim`. README e manifests 1.2.0.
 - **De onde veio:** leitura dos quatro repos da Avex na volta das férias. O STATE do Constance tinha 569 linhas (40 KB); o fim de sessão fazia 12 passos, dos quais 3 eram o ritual; havia até 4 "partes" por dia no mesmo repo; e entre 24 e 28/08 foram 8 pendências herdadas que se revelaram falsas — o STATE virou narrativa que ninguém reconfere.

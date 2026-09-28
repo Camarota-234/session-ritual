@@ -10,8 +10,10 @@ arquivos que vivem no próprio repositório.
 | `SESSION_LOG.md` | o que aconteceu em cada sessão, em ordem (append-only) |
 
 **Ao começar** ("onde paramos", "o que temos pra hoje", `/session-start`): puxa
-o repo, lê os dois arquivos, roda `git status`, entrega um briefing e pergunta o
-foco do dia.
+o repo, lê os dois arquivos, roda `git status`, entrega um briefing e propõe o
+primeiro item planejado como foco. Se a primeira mensagem já traz o foco ("hoje é o
+Pix"), não há parada: o briefing encolhe para o que toca o foco e o trabalho começa.
+O script avisa quando há commits depois do último `/session-end` (STATE defasado).
 
 **Ao encerrar** ("vamos encerrar", "terminamos por hoje", `/session-end`):
 confirma em uma linha, sintetiza a sessão, reescreve o `STATE`, adiciona uma
@@ -25,7 +27,10 @@ pedido — "fecha a semana" — ou quando o último completo tem mais de 7 dias)
 extensão pessoal escolhe o que roda em cada um (`## Fim leve` / `## Fim completo`).
 
 O `STATE` tem teto de **120 linhas** e regras de dieta (travas permanentes vão para o
-`CLAUDE.md`, item fechado some, evidência vira ponteiro). Detalhes no `SKILL.md`.
+`CLAUDE.md`, item fechado some, evidência vira ponteiro). Pendência que fecha no meio
+da sessão sai do `STATE` na hora. Cada entrada do `LOG` abre com um bullet `Resumo`, e
+é só ele que o início lê. Data de pendência é contexto, nunca cobrança. Detalhes no
+`SKILL.md`.
 
 Na primeira sessão de um projeto, pergunta antes de criar os arquivos. Não mexe
 no seu `CLAUDE.md`.

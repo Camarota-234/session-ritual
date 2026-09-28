@@ -60,6 +60,20 @@ function Relatar([string]$raiz, [bool]$pull) {
     Write-Output "- Branch: $branch$pos"
     $ult = git -C $raiz log --oneline -1 2>$null
     Write-Output "- Último commit: $ult"
+    # Trabalho depois do último /session-end: o STATE não conhece esses commits.
+    # ponytail: granularidade de dia — commit do mesmo dia após o fechamento não conta.
+    $state = Join-Path $raiz 'SESSION_STATE.md'
+    if (Test-Path $state) {
+        $fm = Get-Content $state -Encoding UTF8 -TotalCount 6 | Where-Object { $_ -match '^ultima-sessao:\s*(\d{4}-\d{2}-\d{2})' } | Select-Object -First 1
+        if ($fm) {
+            $data = $Matches[1]
+            $dep = @(git -C $raiz log --oneline --since="$data 23:59:59" 2>$null)
+            if ($dep.Count -gt 0) {
+                Write-Output "- **Commits depois do último ``/session-end`` ($data): $($dep.Count)** — o STATE pode estar defasado:"
+                $dep | Select-Object -First 5 | ForEach-Object { Write-Output "  - $_" }
+            }
+        }
+    }
     $mod = @($sb | Select-Object -Skip 1)
     if ($mod.Count -gt 0) {
         Write-Output "- Arquivos modificados ($($mod.Count)):"

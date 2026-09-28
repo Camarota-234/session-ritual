@@ -28,7 +28,10 @@ registrava sessões de outro jeito (troca as referências ao formato antigo uma 
 
 ## Início (`/session-start`)
 
-Execute em sequência, sem pedir confirmação, e só depois pergunte o foco.
+Execute em sequência, sem pedir confirmação. Há dois modos, e a primeira mensagem
+decide qual: **foco declarado** (o usuário já disse o que quer fazer — "hoje é o Pix",
+"vamos no bug do login") e **sem foco** ("o que temos", "onde paramos"). Os passos 1 a
+3 são iguais nos dois; só o briefing muda.
 
 1. **Parte mecânica, por script.** Rodar, com o caminho do repo atual:
 
@@ -42,6 +45,12 @@ Execute em sequência, sem pedir confirmação, e só depois pergunte o foco.
    repo-irmão** declarado na linha `**Repos-irmãos:**` do `SESSION_STATE.md`. A saída
    é a seção "Repositório" do briefing, pronta: colar, não reescrever.
 
+   O script também compara `ultima-sessao` do frontmatter do `SESSION_STATE.md` com o
+   histórico do repo. Se há commits **depois** do último fechamento, imprime a linha
+   "Commits depois do último `/session-end`". Isso significa que houve trabalho que o
+   STATE não conhece (terminal fechado sem ritual, sessão de outra máquina): o
+   briefing repete a linha e trata "Próxima sessão" como possivelmente defasada.
+
    Se o pull falhar (divergência, sem rede), o script não interrompe: a linha "Pull
    falhou" entra no briefing como está. Se o script não existir ou o PowerShell não
    estiver disponível, fazer à mão, por repo: `git pull --ff-only`, `git status -sb`
@@ -53,12 +62,16 @@ Execute em sequência, sem pedir confirmação, e só depois pergunte o foco.
    sempre, que o repo está como foi deixado — e ela vai rodar de qualquer forma ao
    encostar no código. Se a última sessão fechou com teste vermelho, isso está no
    `SESSION_LOG.md`.
-2. **Ler o contexto persistido.** `SESSION_STATE.md` inteiro e as últimas duas
-   entradas de `SESSION_LOG.md` — do repo atual e de cada repo-irmão. Se nenhum dos
-   dois existir, é a primeira sessão neste projeto — veja "Primeira sessão" abaixo.
+2. **Ler o contexto persistido.** `SESSION_STATE.md` inteiro e, das últimas duas
+   entradas de `SESSION_LOG.md`, o bullet **Resumo** e o bullet **Pendências** — do
+   repo atual e de cada repo-irmão. O resto da entrada só se o foco do dia tocar nela
+   (entrada antiga sem `Resumo`: ler as primeiras 10 linhas). Se nenhum dos dois
+   arquivos existir, é a primeira sessão neste projeto — veja "Primeira sessão" abaixo.
 3. **Extensão.** Se `~/.claude/ritual-extend.md` existir, execute os passos da seção
    `## Início` dele (ver "Ponto de extensão").
-4. **Briefing.** Apresente e pare:
+4. **Briefing.** Depende do modo.
+
+   **Sem foco** — apresente e pare:
 
    ```
    ## Briefing — [data de hoje]
@@ -73,14 +86,32 @@ Execute em sequência, sem pedir confirmação, e só depois pergunte o foco.
    [pendências do SESSION_STATE.md + o que das últimas entradas do LOG impacta hoje]
    ```
 
-   **Pendência marcada como suposta entra no briefing como hipótese, não como
+   Feche propondo, não perguntando em aberto: o item 1 de "Próxima sessão" é o foco
+   sugerido, e a pergunta é só "começo por aí?". Aguarde a resposta antes de qualquer
+   trabalho.
+
+   **Foco declarado** — não há parada. O briefing encolhe para o que toca o foco:
+
+   ```
+   ## Briefing — [data de hoje] — foco: [o que o usuário pediu]
+   - [linhas do script que importam: pull falhou, commits depois do último fechamento,
+     ahead/behind, arquivos modificados. Repo limpo e em dia = uma linha]
+   - [o que do STATE e do LOG toca o foco: pendência ligada, decisão recente, evidência]
+   - [se o foco não está em "Próxima sessão": "não estava planejado; entra na frente de
+     X" — uma frase, sem pedir justificativa]
+   ```
+
+   E segue direto para o trabalho. O que não toca o foco não entra: o STATE inteiro
+   foi lido e está em contexto para quando precisar.
+
+   **Nos dois modos, pendência marcada como suposta entra como hipótese, não como
    fato** — "consta que X está quebrado, não medido" e não "X está quebrado". Se
    ela for definir o trabalho do dia, o primeiro passo é confirmá-la, e isso é
    mais barato que planejar em cima de um risco que não existe.
 
-   > "Tem algum foco específico para hoje, ou seguimos a ordem do planejado?"
-
-   Aguarde a resposta antes de qualquer trabalho.
+   **O briefing não cobra prazo.** Data de pendência é contexto para retomar, não
+   gatilho: nada de "está aberta há N dias". Quem decide a ordem é a lista de
+   "Próxima sessão".
 
 ### Primeira sessão
 
@@ -146,6 +177,15 @@ Duas regras que evitam a divergência:
 No fim da sessão, reescreva o STATE de **cada** repo que a sessão tocou. No
 início, leia o de todos — o script já traz o estado Git de todos.
 
+## Durante a sessão
+
+Uma regra só: **pendência que fecha, sai do STATE na hora.** Quando o trabalho da
+sessão resolve uma linha de "Pendências" (com evidência, não por intenção), apague a
+linha naquele momento, em edição de uma linha, sem commit próprio — o checkpoint ou o
+`/session-end` seguinte commita. Não reescreva mais nada do STATE nesse momento: o
+resto é do fim de sessão. O fim fica mais barato porque parte do STATE já está certo,
+e um terminal fechado sem ritual perde menos.
+
 ## Checkpoint (`/session-checkpoint`)
 
 Para a sessão que se divide em partes no mesmo dia — a conversa migrou de assunto, o
@@ -173,8 +213,8 @@ Depois:
 3. **Commit** dos arquivos da sessão e do LOG: `docs: checkpoint HH:MM — <resumo>`.
    Push é opcional aqui; é obrigatório no fim.
 
-**O checkpoint não toca o `SESSION_STATE.md`, não roda extensão e não roda nada
-caro.** No `/session-end` seguinte, a entrada do dia é reescrita **absorvendo** os
+**O checkpoint não reescreve o `SESSION_STATE.md`** (só leva junto as linhas de
+pendência já apagadas durante a sessão), **não roda extensão e não roda nada caro.** No `/session-end` seguinte, a entrada do dia é reescrita **absorvendo** os
 checkpoints: os sub-blocos `### checkpoint` somem e o conteúdo vira os bullets normais
 da entrada. Nenhum checkpoint sobrevive a um fim de sessão.
 
@@ -231,13 +271,18 @@ completo?" — decida e avise.
    **Toda pendência sai marcada com como foi estabelecida** — medida (com o que a
    mediu) ou suposta. Risco herdado que ninguém conferiu é hipótese, e escrevê-lo como
    fato faz a próxima sessão gastar o dia consertando o que não está quebrado — ou,
-   pior, confiar num risco mal descrito que esconde o verdadeiro.
+   pior, confiar num risco mal descrito que esconde o verdadeiro. Pendência nova
+   também leva a data em que surgiu, `(desde DD/MM)`, como contexto para retomar.
+   Pendência que espera terceiro (cliente, fornecedor) leva `(aguardando <quem>)`, e
+   isso é tudo: a data não vira cobrança em lugar nenhum do ritual.
 
    **Conferir o teto antes de seguir:** `wc -l SESSION_STATE.md` ≤ 120. Passou, cortar
    agora — o que sair já está no LOG.
 
-3. **Entrada em `SESSION_LOG.md`.** No topo do arquivo, uma entrada com data, feito,
-   decisões e pendências — bullets de uma linha, escaneável. Se a entrada de hoje já
+3. **Entrada em `SESSION_LOG.md`.** No topo do arquivo, uma entrada com data, resumo,
+   feito, decisões e pendências. **O primeiro bullet é sempre `Resumo`, uma frase:** é
+   o que o início da próxima sessão lê; o resto da entrada pode ser tão longo quanto a
+   sessão merecer, porque só é lido quando o foco do dia pede. Se a entrada de hoje já
    existe (por checkpoint ou por uma parte anterior), reescrevê-la absorvendo os
    sub-blocos `### checkpoint`. Nunca edite entradas de outros dias.
 4. **Extensão.** Se `~/.claude/ritual-extend.md` existir: no fim leve, executar a seção
@@ -305,10 +350,10 @@ ultimo-fechamento-completo: AAAA-MM-DD
 - <o que foi entregue e **nunca exercitado**, dito assim>
 
 ## Pendências
-- <o que está aberto, com contexto para retomar, marcado (medida) ou (suposta)>
+- <o que está aberto, com contexto para retomar, marcado (medida) ou (suposta), (desde DD/MM), e (aguardando <quem>) se depende de terceiro>
 
 ## Próxima sessão
-- <o que fazer em seguida, em ordem>
+- <o que fazer em seguida, em ordem — a ordem aqui manda, não a data da pendência>
 ```
 
 ### Regras de dieta do STATE
@@ -327,9 +372,10 @@ sessão. Cada linha a mais custa duas vezes — e um STATE que ninguém consegue
   está no LOG.
 - **Evidência vira ponteiro.** "Provado na execução 9924, commit `ad35279`", e não o
   relato da execução. O relato mora no LOG.
-- **Pendência parada há 14 dias vira uma frase**, marcada `(parada desde DD/MM)`. Se
-  continuar parada por mais 14, sai do STATE — vira linha em "Dívida" do `CLAUDE.md`
-  ou entrada de decisão, conforme o caso.
+- **Pendência que perdeu o contexto sai.** Não é por idade: é quando ela não está
+  mais em "Próxima sessão" e ninguém sabe dizer o que falta. Vira linha em "Dívida"
+  do `CLAUDE.md` ou entrada de decisão, conforme o caso. A data `(desde DD/MM)`
+  fica só para quem retoma saber de quando é o contexto.
 - **Estado é o que é verdade hoje.** Evento marcado não é evento ocorrido: "a reunião
   é em 27/08" entra em "Próxima sessão", nunca em "Estado atual" como se já tivesse
   acontecido.
@@ -344,10 +390,11 @@ uma linha mude. Escreva a data absoluta: "entregue em 24/08", não "entregue hoj
 # Log de sessões — <nome do projeto>
 
 ## AAAA-MM-DD — <título curto da sessão>
+- **Resumo:** <uma frase: o que a sessão mudou no projeto — é o que o início lê>
 - **Feito:** ... (com a evidência: teste rodado, query conferida, id da execução)
 - **Feito, não exercitado:** ... (entregue sem prova de que roda; omitir se não houve)
 - **Decisões:** ... (só o que não é óbvio pelo código; omitir se não houve)
-- **Pendências:** ... (cada uma marcada como medida ou suposta)
+- **Pendências:** ... (cada uma marcada como medida ou suposta, com a data em que surgiu)
 ```
 
 Entre um fim de sessão e outro, a entrada do dia pode carregar sub-blocos
