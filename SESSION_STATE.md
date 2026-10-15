@@ -1,5 +1,5 @@
 ---
-ultima-sessao: 2026-09-28
+ultima-sessao: 2026-10-15
 ultimo-fechamento-completo: 2026-09-28
 ---
 
@@ -10,6 +10,10 @@ A extensão pessoal do autor mora em `Camarota-234/claude-config`
 (`ritual-extend.md`), e não é parte deste repo.
 
 ## Estado atual
+- **v1.3.1** (15/10, `9f5cece`): o passo 1 do início usa a saída de um hook
+  `SessionStart` quando ela já está no contexto (bloco `## Repositório — <data>`), em vez
+  de rodar o script de novo. O hook é da extensão pessoal (`claude-config`,
+  `session-hook.ps1`); o plugin só reconhece a saída. Instalada no pc em 15/10.
 - **v1.3.0** (28/09), cinco mudanças sobre a 1.2.0, todas vindas de ler o FGSD
   (`VancheeZze/FGSD`) contra os STATE/LOG reais da Avex:
   - **Início com foco declarado**: primeira mensagem com foco não tem parada; o
@@ -34,10 +38,10 @@ A extensão pessoal do autor mora em `Camarota-234/claude-config`
 - **(medida, desde 08/09)** `skill-creator` (evals + description) não passou neste repo.
 - **(suposta, desde 16/08)** A `description` do frontmatter pode não aparecer inteira
   na listagem de skills.
-- **(medida, desde 28/09)** A 1.3.0 está instalada (cache `1.3.0`, reinstalada em
-  28/09) mas não abriu nem fechou sessão real pela skill: o fechamento de 28/09 seguiu
-  o `SKILL.md` à mão, porque a sessão nasceu com a 1.2.0 carregada. O modo "foco
-  declarado" e o `Resumo` no LOG só se provam em uso.
+- **(medida, desde 28/09)** O fim pela skill 1.3.x rodou em 15/10 (cache `1.3.1`,
+  três repos: um completo, dois leves). O início com "foco declarado" e o passo 1
+  pulado pelo hook ainda não foram vistos numa sessão real.
+- **(medida, desde 15/10)** O notebook segue na 1.3.0.
 
 ## Próxima sessão
 1. Usar a 1.3.0 nos repos da Avex (já reinstalada); anotar se o briefing com foco

@@ -1,5 +1,11 @@
 # Log de sessões — session-ritual
 
+## 2026-10-15 — v1.3.1: início aproveita a saída do hook SessionStart
+- **Resumo:** o passo 1 do início passa a usar a saída do `session-start.ps1` quando um hook `SessionStart` já a imprimiu, sem rodar o script de novo.
+- **Feito:** uma frase no passo 1 do `SKILL.md`, manifests em 1.3.1 (`9f5cece`), `claude plugin update` no pc. O hook em si é da extensão pessoal (`claude-config/scripts/session-hook.ps1`) e foi exercitado numa sessão real no ufg. Este fechamento rodou pela skill 1.3.1.
+- **Feito, não exercitado:** o início com o passo 1 pulado. A sessão nova do ufg recebeu o bloco, mas não vi o briefing que ela montou.
+- **Pendências:** as de 08/09 (validação sem extend; `skill-creator`) seguem; notebook na 1.3.0.
+
 ## 2026-09-28 — v1.3.0: início com foco, detecção de sessão não fechada, Resumo no LOG
 - **Resumo:** o ritual passa a servir a sessão que já chega com foco, avisa quando o STATE ficou para trás, e troca cobrança por data por ordem de execução.
 - **Feito:** `SKILL.md` com os dois modos de início (foco declarado / sem foco, com o item 1 do planejado proposto), seção "Durante a sessão" (pendência fechada sai na hora), `Resumo` obrigatório no LOG e leitura parcial no início, `(desde DD/MM)` e `(aguardando <quem>)` nas pendências. `session-start.ps1` imprime os commits posteriores a `ultima-sessao` — testado no Constance (nenhum), em pasta sem git e neste repo. README e manifests 1.3.0.
