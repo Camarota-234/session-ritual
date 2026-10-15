@@ -33,7 +33,10 @@ decide qual: **foco declarado** (o usuário já disse o que quer fazer — "hoje
 "vamos no bug do login") e **sem foco** ("o que temos", "onde paramos"). Os passos 1 a
 3 são iguais nos dois; só o briefing muda.
 
-1. **Parte mecânica, por script.** Rodar, com o caminho do repo atual:
+1. **Parte mecânica, por script.** Se um hook `SessionStart` já imprimiu a saída deste
+   script nesta sessão (bloco `## Repositório — <data de hoje>` no contexto), use essa
+   saída e siga para o passo 2: rodar de novo só repete o pull. Senão, rodar, com o
+   caminho do repo atual:
 
    ```powershell
    powershell -NoProfile -ExecutionPolicy Bypass -File "<pasta do plugin>\scripts\session-start.ps1" -Repo <repo>
