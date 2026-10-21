@@ -1,7 +1,10 @@
-﻿# session-start.ps1 — parte mecânica do início de sessão (plugin session-ritual).
-# Para cada repo (o atual + os declarados em **Repos-irmãos:** do SESSION_STATE.md):
-# pull --ff-only (salvo -NoPull), status -sb com ahead/behind, últimos 5 commits.
-# Saída: bloco Markdown pronto para a seção "Repositório" do briefing. Exit 0 sempre.
+﻿# session-start.ps1 — mechanical part of the session start (session-ritual plugin).
+# For each repo (the current one plus those listed on the **Sibling repos:** line of
+# SESSION_STATE.md): pull --ff-only (unless -NoPull), branch with ahead/behind, main-branch
+# ownership note on feature branches, 1.x STATE detection, commits after the last
+# /session-end, modified files, last 5 commits.
+# Output: a Markdown block ready for the "Repository" section of the briefing.
+# Same output, line by line, as scripts/session-start.sh. Exit 0 always.
 [CmdletBinding()]
 param(
     [string]$Repo = (Get-Location).Path,
@@ -11,91 +14,118 @@ param(
 $ErrorActionPreference = 'Continue'
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
-function Get-Irmaos([string]$raiz) {
-    $state = Join-Path $raiz 'SESSION_STATE.md'
-    if (-not (Test-Path $state)) { return @() }
-    $linha = Get-Content $state -Encoding UTF8 | Where-Object { $_ -match '^\*\*Repos-irm' } | Select-Object -First 1
-    if (-not $linha) { return @() }
-    $m = [regex]::Matches($linha, '`([^`]+)`')
+function Read-State([string]$root) {
+    $state = Join-Path $root 'SESSION_STATE.md'
+    if (-not (Test-Path $state)) { return $null }
+    return @(Get-Content $state -Encoding UTF8 | ForEach-Object { $_ -replace "`r$", '' })
+}
+
+function Get-MainBranch([string]$root) {
+    $head = git -C $root symbolic-ref -q --short refs/remotes/origin/HEAD 2>$null
+    if ($head) { return ($head -replace '^origin/', '') }
+    foreach ($b in @('main', 'master')) {
+        git -C $root show-ref --verify -q "refs/heads/$b" 2>$null
+        if ($LASTEXITCODE -eq 0) { return $b }
+    }
+    return ''
+}
+
+function Get-Siblings([string]$root) {
+    $lines = Read-State $root
+    if ($null -eq $lines) { return @() }
+    $line = $lines | Where-Object { $_ -match '^\*\*(Sibling repos|Repos-irm)' } | Select-Object -First 1
+    if (-not $line) { return @() }
     $out = @()
-    foreach ($x in $m) {
-        $p = $x.Groups[1].Value.Trim()
+    foreach ($m in [regex]::Matches($line, '`([^`]+)`')) {
+        $p = $m.Groups[1].Value.Trim()
         if (Test-Path (Join-Path $p '.git')) { $out += (Resolve-Path $p).Path }
     }
     return $out
 }
 
-function Relatar([string]$raiz, [bool]$pull) {
-    $nome = Split-Path $raiz -Leaf
-    Write-Output "### $nome"
-    Write-Output "- Caminho: ``$raiz``"
-    if (-not (Test-Path (Join-Path $raiz '.git'))) {
-        Write-Output "- Não é repositório Git."
+function Get-LastSessionDate([string]$root) {
+    $lines = Read-State $root
+    if ($null -eq $lines) { return $null }
+    foreach ($l in $lines) {
+        if ($l -match '^(last-session|ultima-sessao):\s*(\d{4}-\d{2}-\d{2})') { return $Matches[2] }
+    }
+    return $null
+}
+
+function Test-LegacyState([string]$root) {
+    $lines = Read-State $root
+    if ($null -eq $lines) { return $false }
+    return -not ($lines | Where-Object { $_ -match '^## In progress$' })
+}
+
+function Report([string]$root, [bool]$pull) {
+    $name = Split-Path $root -Leaf
+    Write-Output "### $name"
+    Write-Output "- Path: ``$root``"
+    if (-not (Test-Path (Join-Path $root '.git'))) {
+        Write-Output "- Not a git repository."
         Write-Output ""
         return
     }
-    $temRemote = (@(git -C $raiz remote 2>$null) | Measure-Object).Count -gt 0
-    if ($pull -and $temRemote) {
-        $saida = (git -C $raiz pull --ff-only 2>&1 | Out-String)
+    $hasRemote = (@(git -C $root remote 2>$null) | Measure-Object).Count -gt 0
+    if (-not $hasRemote) {
+        Write-Output "- No remote."
+    } elseif ($pull) {
+        $out = (git -C $root pull --ff-only 2>&1 | Out-String)
         if ($LASTEXITCODE -ne 0) {
-            Write-Output "- **Pull falhou** — o repo pode estar desatualizado: $($saida.Trim() -replace '\s+', ' ')"
+            Write-Output "- **Pull failed** — the repo may be out of date: $($out.Trim() -replace '\s+', ' ')"
         } else {
-            $ln = (($saida.Trim() -split "`n") | Select-Object -Last 1)
-            Write-Output "- Pull: $ln"
+            Write-Output "- Pull: $((($out.Trim() -split "`n") | Select-Object -Last 1))"
         }
-    } elseif (-not $temRemote) {
-        Write-Output "- Sem remote."
     } else {
-        Write-Output "- Pull: não rodado (-NoPull)."
+        Write-Output "- Pull: Not run (--no-pull)."
     }
-    $sb = @(git -C $raiz status -sb 2>$null)
-    $cab = $sb | Select-Object -First 1
-    $branch = ($cab -replace '^## ', '') -replace '\.\.\..*$', ''
-    $ahead = 0; $behind = 0
-    if ($cab -match 'ahead (\d+)') { $ahead = [int]$Matches[1] }
-    if ($cab -match 'behind (\d+)') { $behind = [int]$Matches[1] }
+    $sb = @(git -C $root status -sb 2>$null)
+    $head = $sb | Select-Object -First 1
+    $branch = git -C $root symbolic-ref -q --short HEAD 2>$null
+    if (-not $branch) { $branch = '(detached)' }
     $pos = ''
-    if ($ahead -gt 0) { $pos += " — **$ahead commit(s) à frente do remote**" }
-    if ($behind -gt 0) { $pos += " — **$behind commit(s) atrás do remote**" }
+    if ($head -match 'ahead (\d+)') { $pos += " — **$($Matches[1]) commit(s) ahead of remote**" }
+    if ($head -match 'behind (\d+)') { $pos += " — **$($Matches[1]) commit(s) behind remote**" }
     Write-Output "- Branch: $branch$pos"
-    $ult = git -C $raiz log --oneline -1 2>$null
-    Write-Output "- Último commit: $ult"
-    # Trabalho depois do último /session-end: o STATE não conhece esses commits.
-    # ponytail: granularidade de dia — commit do mesmo dia após o fechamento não conta.
-    $state = Join-Path $raiz 'SESSION_STATE.md'
-    if (Test-Path $state) {
-        $fm = Get-Content $state -Encoding UTF8 -TotalCount 6 | Where-Object { $_ -match '^ultima-sessao:\s*(\d{4}-\d{2}-\d{2})' } | Select-Object -First 1
-        if ($fm) {
-            $data = $Matches[1]
-            $dep = @(git -C $raiz log --oneline --since="$data 23:59:59" 2>$null)
-            if ($dep.Count -gt 0) {
-                Write-Output "- **Commits depois do último ``/session-end`` ($data): $($dep.Count)** — o STATE pode estar defasado:"
-                $dep | Select-Object -First 5 | ForEach-Object { Write-Output "  - $_" }
-            }
+    $main = Get-MainBranch $root
+    if ($branch -ne '(detached)' -and $main -and $branch -ne $main) {
+        Write-Output "- Feature branch: STATE is owned by ``$main``; this branch writes only its ``## In progress`` block and the LOG."
+    }
+    Write-Output "- Last commit: $(git -C $root log --oneline -1 2>$null)"
+    if (Test-LegacyState $root) {
+        Write-Output "- **STATE in 1.x format** — migrate before the briefing: see references/adoption.md."
+    }
+    $date = Get-LastSessionDate $root
+    if ($date) {
+        $after = @(git -C $root log --oneline --since="$date 23:59:59" 2>$null)
+        if ($after.Count -gt 0) {
+            Write-Output "- **Commits after the last ``/session-end`` ($date): $($after.Count)** — STATE may be stale:"
+            $after | Select-Object -First 5 | ForEach-Object { Write-Output "  - $_" }
         }
     }
     $mod = @($sb | Select-Object -Skip 1)
     if ($mod.Count -gt 0) {
-        Write-Output "- Arquivos modificados ($($mod.Count)):"
+        Write-Output "- Modified files ($($mod.Count)):"
         $mod | Select-Object -First 15 | ForEach-Object { Write-Output "  - ``$($_.Trim())``" }
         if ($mod.Count -gt 15) { Write-Output "  - …" }
     } else {
-        Write-Output "- Arquivos modificados: limpo"
+        Write-Output "- Modified files: clean"
     }
-    Write-Output "- Últimos commits:"
-    git -C $raiz log --oneline -5 2>$null | ForEach-Object { Write-Output "  - $_" }
+    Write-Output "- Recent commits:"
+    git -C $root log --oneline -5 2>$null | ForEach-Object { Write-Output "  - $_" }
     Write-Output ""
 }
 
 if (-not (Test-Path $Repo)) {
-    Write-Output "## Repositório — caminho não existe: ``$Repo`` (máquina ``$env:COMPUTERNAME``)"
+    Write-Output "## Repository — path does not exist: ``$Repo`` (host ``$env:COMPUTERNAME``)"
     exit 0
 }
-$raiz = (Resolve-Path $Repo).Path
-Write-Output "## Repositório — $(Get-Date -Format 'yyyy-MM-dd HH:mm') — máquina ``$env:COMPUTERNAME``"
+$root = (Resolve-Path $Repo).Path
+Write-Output "## Repository — $(Get-Date -Format 'yyyy-MM-dd HH:mm') — host ``$env:COMPUTERNAME``"
 Write-Output ""
-Relatar $raiz (-not $NoPull)
-foreach ($irmao in (Get-Irmaos $raiz)) {
-    if ($irmao -ne $raiz) { Relatar $irmao (-not $NoPull) }
+Report $root (-not $NoPull)
+foreach ($sibling in (Get-Siblings $root)) {
+    if ($sibling -ne $root) { Report $sibling (-not $NoPull) }
 }
 exit 0
