@@ -1,5 +1,11 @@
 # Log de sessões — session-ritual
 
+## 2026-10-21 — Licença MIT e topics no GitHub
+- **Resumo:** o repo passa a ter licença MIT e topics, como parte de arrumar o perfil público do autor; nenhuma mudança na skill ou no script.
+- **Feito:** `LICENSE` (MIT, João Guilherme Camarota, 2026) e `"license": "MIT"` no `plugin.json`, versão mantida em 1.3.1; topics `claude-code`, `claude-code-skill`, `ai-agents`, `developer-tools`, `productivity`, `powershell` via `gh repo edit`. Conferido pela API do GitHub e por `claude plugin validate .` (passou com um aviso). Este fechamento rodou pela skill 1.3.1, de uma sessão aberta em `C:\vault`.
+- **Decisões:** MIT, e não Apache-2.0 ou GPL: ferramenta pequena em PowerShell, sem risco de patente, e GPL afastaria quem quer usar em repo fechado. Sem bump de versão, porque nada que o plugin carrega mudou.
+- **Pendências:** aviso `id` desconhecido em `marketplace.json` (medida, desde 21/10); as de 08/09 seguem.
+
 ## 2026-10-15 — v1.3.1: início aproveita a saída do hook SessionStart
 - **Resumo:** o passo 1 do início passa a usar a saída do `session-start.ps1` quando um hook `SessionStart` já a imprimiu, sem rodar o script de novo.
 - **Feito:** uma frase no passo 1 do `SKILL.md`, manifests em 1.3.1 (`9f5cece`), `claude plugin update` no pc. O hook em si é da extensão pessoal (`claude-config/scripts/session-hook.ps1`) e foi exercitado numa sessão real no ufg. Este fechamento rodou pela skill 1.3.1.
