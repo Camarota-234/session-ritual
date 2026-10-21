@@ -1,5 +1,13 @@
 # Log de sessões — session-ritual
 
+## 2026-10-21 (2) — 2.0.0 built on branch `v2.0`: three skills, hand-off block, hook and scripts shipped
+- **Summary:** the plugin was rebuilt as 2.0 on branch `v2.0` (three skills, `## In progress` hand-off, four pending sections, quotas, monthly rotation, hook plus bash/PowerShell scripts, English), not yet merged, installed or exercised in a session.
+- **Done:** spec and plan in `docs/superpowers/`; plan tasks 1–10, each committed with its tests or checks (`d2c362d`..`e46f95d`): `session-start.ps1` rewritten on the 2.0 output contract with 30 checks; `session-start.sh` with a parity diff against the ps1; `session-hook.sh` + `hooks/hooks.json` with 13 checks; five `references/`; three `SKILL.md` within their line caps (79/50/93); manifests 2.0.0 (`id` field removed, validate clean); README and CHANGELOG. Measured in October across nine Avex repos before designing: 30 app sessions in five weeks on one repo, 8 LOG entries in a day, 47 LOG commits in 20 days, checkpoint never used.
+- **Done, not exercised:** the skills in a real session; the hook under Claude Code; the migration performed by the skill.
+- **Decisions:** in `C:\vault\pessoal\session-ritual\decisoes\processo.md` (21/10): the unit is the task; names kept; English with fixed section headers; 2.0 with a one-time migration; tests without a framework; `.sh` wrapper that delegates to the `.ps1` on Windows.
+- **Migration 2.0:** this STATE migrated by hand from 1.x. Cut: the 1.3.x history bullets (now in `CHANGELOG.md`); closed: "description may be truncated" (the listing truncates at 1,536 chars combined; the new descriptions are under 500) and "validate warns about `id`" (field removed).
+- **Pending:** final review and merge (measured 21/10); reinstall and exercise (measured 21/10); `skill-creator` and run without the extension (measured 08/09).
+
 ## 2026-10-21 — Licença MIT e topics no GitHub
 - **Resumo:** o repo passa a ter licença MIT e topics, como parte de arrumar o perfil público do autor; nenhuma mudança na skill ou no script.
 - **Feito:** `LICENSE` (MIT, João Guilherme Camarota, 2026) e `"license": "MIT"` no `plugin.json`, versão mantida em 1.3.1; topics `claude-code`, `claude-code-skill`, `ai-agents`, `developer-tools`, `productivity`, `powershell` via `gh repo edit`. Conferido pela API do GitHub e por `claude plugin validate .` (passou com um aviso). Este fechamento rodou pela skill 1.3.1, de uma sessão aberta em `C:\vault`.

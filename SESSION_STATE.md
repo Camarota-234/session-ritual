@@ -1,56 +1,38 @@
 ---
-ultima-sessao: 2026-10-21
-ultimo-fechamento-completo: 2026-10-21
+last-session: 2026-10-21
+last-full-end: 2026-10-21
 ---
 
-# Estado da sessão — session-ritual
+# Session state — session-ritual
 
-**Escopo deste arquivo:** o plugin público `session-ritual` (skill + script + manifests).
-A extensão pessoal do autor mora em `Camarota-234/claude-config`
-(`ritual-extend.md`), e não é parte deste repo.
+**Scope:** the public `session-ritual` plugin (three skills, references, scripts, hook, manifests).
+The author's personal extension lives in `Camarota-234/claude-config` (`ritual-extend.md`) and is not part of this repo.
 
-## Estado atual
-- **Licença MIT e topics** (21/10, commit `chore: licença MIT`): `LICENSE` na raiz,
-  `"license": "MIT"` no `plugin.json`, seis topics no GitHub (`claude-code`,
-  `claude-code-skill`, `ai-agents`, `developer-tools`, `productivity`, `powershell`).
-  Conferido pela API (`license: MIT`) e por `claude plugin validate .` (passou).
-- **v1.3.1** (15/10, `9f5cece`): o passo 1 do início usa a saída de um hook
-  `SessionStart` quando ela já está no contexto (bloco `## Repositório — <data>`), em vez
-  de rodar o script de novo. O hook é da extensão pessoal (`claude-config`,
-  `session-hook.ps1`); o plugin só reconhece a saída. Instalada no pc em 15/10.
-- **v1.3.0** (28/09), cinco mudanças sobre a 1.2.0, todas vindas de ler o FGSD
-  (`VancheeZze/FGSD`) contra os STATE/LOG reais da Avex:
-  - **Início com foco declarado**: primeira mensagem com foco não tem parada; o
-    briefing encolhe para o que toca o foco e diz se ele estava planejado. Sem foco, o
-    briefing propõe o item 1 de "Próxima sessão" em vez de perguntar em aberto.
-  - **Script detecta trabalho depois do último `/session-end`**: compara
-    `ultima-sessao` com `git log --since` e imprime os commits que o STATE não conhece.
-    Testado em 28/09: Constance (nenhum commit depois, linha ausente), pasta sem git,
-    e este repo após o commit da 1.3.0 (deve mostrar 1).
-  - **Pendência que fecha sai do STATE na hora** (seção "Durante a sessão"); o
-    checkpoint leva as linhas apagadas junto, sem reescrever o resto.
-  - **Bullet `Resumo` obrigatório em cada entrada do LOG**, e o início lê só `Resumo`
-    e `Pendências` das duas últimas entradas (entrada antiga sem `Resumo`: 10 linhas).
-  - **Data em pendência é contexto, não cobrança**: `(desde DD/MM)` e
-    `(aguardando <quem>)`; a regra dos 14/28 dias saiu. Ordem de "Próxima sessão" manda.
-- A 1.2.0 fechou sessões reais no Constance (10/09, dois repos) — pendência de 08/09
-  fechada.
+## In progress
 
-## Pendências
-- **(medida, desde 08/09)** `/session-start` **sem** `ritual-extend.md` nunca foi
-  rodado — renomear o arquivo temporariamente é o teste de que nada do vault vaza.
-- **(medida, desde 08/09)** `skill-creator` (evals + description) não passou neste repo.
-- **(suposta, desde 16/08)** A `description` do frontmatter pode não aparecer inteira
-  na listagem de skills.
-- **(medida, desde 28/09)** O fim pela skill 1.3.x rodou em 15/10 (cache `1.3.1`,
-  três repos: um completo, dois leves). O início com "foco declarado" e o passo 1
-  pulado pelo hook ainda não foram vistos numa sessão real.
-- **(medida, desde 15/10)** O notebook segue na 1.3.0.
-- **(medida, desde 21/10)** `claude plugin validate .` avisa campo desconhecido `id` em
-  `marketplace.json:3` (ignorado ao carregar). Tirar na próxima versão.
+### 2.0 rollout — branch `v2.0` (since 21/10)
+- Spec: `docs/superpowers/specs/2026-10-21-session-ritual-2.0-design.md`; plan: `docs/superpowers/plans/2026-10-21-session-ritual-2.0.md`, tasks 1–10 done, 11 partly (this file migrated by hand), 12 done in `claude-config` (committed there, not pushed).
+- In flight: the plan's final whole-branch review and fix pass; then merge `v2.0` into `main` and push.
+- Decided, not yet live: the installed plugin is still 1.3.1; nothing on this branch reaches a session until merge, `/plugin marketplace update session-ritual` and reinstall.
+- Next step: after reinstall, in this repo run `/session-ritual:session-start` (no 1.x warning expected), `/session-ritual:session-checkpoint` on a dummy task, open a fresh session with that focus, then `/session-ritual:session-end --full`; log every mismatch with the spec as the first 2.0 bugs. Then push `claude-config`, `/plugin marketplace update joao-config`, `sync-global.ps1`.
 
-## Próxima sessão
-1. Usar a 1.3.0 nos repos da Avex (já reinstalada); anotar se o briefing com foco
-   ficou curto demais e se o aviso de commits depois do fechamento disparou certo.
-2. Rodar a validação sem `ritual-extend.md`.
-3. Passar o `skill-creator` antes de divulgar aos colegas.
+## Current state
+- **2.0.0 on branch `v2.0`** (21/10, `d2c362d`..): three skills (`session-start`, `session-checkpoint`, `session-end`), `references/` (files, adoption, multi-repo, branches, extension), `scripts/session-start.ps1` and `.sh` with identical output, `hooks/hooks.json` → `scripts/session-hook.sh`, README in English, CHANGELOG, MIT. `claude plugin validate .` passes clean.
+- Tests green on 21/10: `tests/session-start.tests.ps1` (30 checks), `tests/session-start.tests.sh` (parity with the ps1 included), `tests/session-hook.tests.sh`.
+- **Never exercised:** the three 2.0 skills in a real session (plugin not reinstalled); the hook under Claude Code (only its script was tested); the 1.x → 2.0 migration done by the skill (this file followed `references/adoption.md` by hand).
+- Installed on this PC: 1.3.1. Notebook: 1.3.0.
+
+## Now
+1. Final review of `v2.0`, fix pass, merge into `main`, push. [1h] (measured 21/10)
+2. Reinstall and exercise the three commands here, per the block above. [1h] (measured 21/10)
+3. `skill-creator` evals and `/skill-doctor` before tagging 2.0.0. [2h] (measured 08/09: never run)
+4. Run `session-start` once without `ritual-extend.md`, to prove nothing from the vault leaks into the base. (measured 08/09: never run)
+
+## Blocked
+- (none)
+
+## Deferred
+- Notebook still on 1.3.0 (deferred 15/10: wait for 2.0 on `main`; back when 2.0.0 is tagged)
+
+## Debt
+- (none)
