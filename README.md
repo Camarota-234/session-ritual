@@ -1,75 +1,105 @@
 # session-ritual
 
-Ritual de início e fim de sessão para o Claude Code. Mantém o contexto de um
-projeto entre sessões — sua, de um colega, ou sua em outra máquina — em dois
-arquivos que vivem no próprio repositório.
+Start, checkpoint and end rituals for Claude Code. They keep a project's context between
+sessions — yours, a colleague's, yours on another machine — in two files that live in the
+repository itself.
 
-| Arquivo | O que guarda |
+| File | What it holds |
 |---|---|
-| `SESSION_STATE.md` | onde o projeto está agora, pendências, o que vem a seguir (reescrito a cada sessão) |
-| `SESSION_LOG.md` | o que aconteceu em cada sessão, em ordem (append-only) |
+| `SESSION_STATE.md` | where the project is now: what is in progress, what works, what to do next (rewritten at each end) |
+| `SESSION_LOG.md` | what happened in each session, newest first (append-only) |
 
-**Ao começar** ("onde paramos", "o que temos pra hoje", `/session-start`): puxa
-o repo, lê os dois arquivos, roda `git status`, entrega um briefing e propõe o
-primeiro item planejado como foco. Se a primeira mensagem já traz o foco ("hoje é o
-Pix"), não há parada: o briefing encolhe para o que toca o foco e o trabalho começa.
-O script avisa quando há commits depois do último `/session-end` (STATE defasado).
+## The three rituals
 
-**Ao encerrar** ("vamos encerrar", "terminamos por hoje", `/session-end`):
-confirma em uma linha, sintetiza a sessão, reescreve o `STATE`, adiciona uma
-entrada no `LOG`, e commita + faz push.
+| Ritual | Unit | What it does | Git |
+|---|---|---|---|
+| `/session-ritual:session-start` | opening | pulls, reads the two files, briefs you — or, if your first message names a focus, reads the matching hand-off block and dives in | pull |
+| `/session-ritual:session-checkpoint` | end of a **task** | writes a 15-line hand-off block to `## In progress` and a sub-block in today's LOG entry | commit, no push |
+| `/session-ritual:session-end` | end of the **day** (`--full`: the week) | rewrites the STATE within its quotas, writes the LOG entry, runs your extension, commits and pushes; `--full` also prunes stale items | commit + push |
 
-**No meio** ("marca um checkpoint", `/session-checkpoint`): acrescenta um bloco na
-entrada de hoje do `LOG` e commita. Não toca o `STATE`.
+They also fire on natural language: "where were we", "close this one and let's do X", "we're
+done for today", "close the week".
 
-O fim tem dois tamanhos: **leve** (padrão — STATE, LOG, commit) e **completo** (por
-pedido — "fecha a semana" — ou quando o último completo tem mais de 7 dias). A
-extensão pessoal escolhe o que roda em cada um (`## Fim leve` / `## Fim completo`).
+Pending items live in four sections by what to do with them: `## Now` (ordered, up to 7),
+`## Blocked` (waiting on someone), `## Deferred` (skipped on purpose, with a reason), `## Debt`.
+Every done item carries its evidence or says *delivered, not exercised*; every pending item says
+whether it was *measured* or *assumed*. A date on an item is context, never a nag.
 
-O `STATE` tem teto de **120 linhas** e regras de dieta (travas permanentes vão para o
-`CLAUDE.md`, item fechado some, evidência vira ponteiro). Pendência que fecha no meio
-da sessão sai do `STATE` na hora. Cada entrada do `LOG` abre com um bullet `Resumo`, e
-é só ele que o início lê. Data de pendência é contexto, nunca cobrança. Detalhes no
-`SKILL.md`.
+## Install
 
-Na primeira sessão de um projeto, pergunta antes de criar os arquivos. Não mexe
-no seu `CLAUDE.md`.
-
-## Instalar
-
-Dentro do Claude Code:
+Inside Claude Code:
 
 ```
 /plugin marketplace add Camarota-234/session-ritual
 /plugin install session-ritual@session-ritual
 ```
 
-Nada mais. Não há configuração.
+Nothing else. In a project with no session files yet, the start asks before creating them.
+The ritual never writes to your `CLAUDE.md`.
 
-## Opcional
+## The hook
 
-- **graphify**: não faz parte do ritual desde a 1.2.0. Rode `/graphify` quando
-  quiser o grafo.
-- **Script de início**: `scripts/session-start.ps1` faz pull, status e ahead/behind
-  do repo e dos repos-irmãos; a skill o chama sozinha. Serve também como hook
-  `SessionStart` com `-NoPull` (só lê, não puxa).
-- **Extensão pessoal**: passos que só fazem sentido para você (sincronizar um
-  vault de notas, atualizar um índice fora do repo, commitar um segundo
-  repositório) vão em `~/.claude/ritual-extend.md`, com seções `## Início`,
-  `## Fim leve` e `## Fim completo` em linguagem natural. O ritual executa cada seção no ponto certo.
-  Sem o arquivo, nada muda. Detalhes em `skills/session-ritual/SKILL.md`,
-  seção "Ponto de extensão".
+The plugin ships a `SessionStart` hook (`hooks/hooks.json` → `scripts/session-hook.sh`). On
+`startup` and `compact`, inside a repo that has `SESSION_STATE.md`, it prints the repository
+block (pull, branch, ahead/behind, commits since the last end, 1.x-format warning) into the
+session context, so the start never depends on the model remembering to run a script. On
+Windows it delegates to `session-start.ps1` under Git Bash; elsewhere it runs `session-start.sh`.
+Both print the same output. To disable it, remove the `SessionStart` entry from your settings'
+plugin hooks, or uninstall the plugin.
 
-## Atualizar
+## How this differs from the app's fork and hand-off
 
-Toda mudança em `skills/` exige bump de `version` em `.claude-plugin/plugin.json`
-e `.claude-plugin/marketplace.json` — o Claude Code guarda o plugin em cache por
-versão e, sem o bump, segue rodando a versão antiga sem aviso.
+The desktop app can fork a session or hand a task to a new one: that carries the whole
+conversation. A checkpoint carries 15 lines: where you are in the plan, what is in flight, what
+was decided but not yet coded, the literal next step. Use the app when the next session needs
+the conversation; use the checkpoint when it needs the state.
 
-Para pegar uma versão nova:
+## Branches and worktrees
+
+The STATE belongs to the main branch. A feature branch or worktree writes only its own
+`## In progress` block and the LOG; on merge, the main branch's STATE wins. Details in
+`references/branches.md`.
+
+## Personal extension
+
+Steps that only make sense for you (sync a notes vault, update an index outside the repo,
+commit a second repository) go in `~/.claude/ritual-extend.md`, with sections `## Start`,
+`## End` and `## Full end`. The ritual runs each at the right point; without the file, nothing
+changes. See `references/extension.md`.
+
+## Upgrading from 1.x
+
+The start script detects a 1.x `SESSION_STATE.md` and the start offers to migrate it, once per
+repo, in one commit. Old LOG entries are not rewritten. Mapping in `references/adoption.md`.
+Rename the sections of your extension file to `## Start`, `## End`, `## Full end`.
+
+## Why this repo has SESSION_STATE.md and SESSION_LOG.md at its root
+
+The plugin is developed with its own ritual. The two files are a live example of the format.
+
+## Updating
+
+Any change under `skills/`, `references/`, `scripts/` or `hooks/` needs a version bump in
+`.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`: Claude Code caches the
+plugin by version and keeps running the old one otherwise. To get a new version:
 
 ```
 /plugin marketplace update session-ritual
 /plugin uninstall session-ritual@session-ritual
 /plugin install session-ritual@session-ritual
 ```
+
+Tests: `bash tests/session-start.tests.sh`, `bash tests/session-hook.tests.sh`, and
+`powershell -NoProfile -ExecutionPolicy Bypass -File tests\session-start.tests.ps1`.
+
+## Em português
+
+Ritual de início, checkpoint e fim de sessão para o Claude Code, em dois arquivos no próprio
+repositório: `SESSION_STATE.md` (onde o projeto está agora, reescrito a cada fim) e
+`SESSION_LOG.md` (o que aconteceu em cada sessão, só acrescenta). O **checkpoint** fecha uma
+tarefa e deixa um bloco de 15 linhas em `## In progress` para a próxima sessão começar quente,
+sem push. O **fim** fecha o dia: reescreve o STATE dentro das cotas, escreve a entrada do LOG,
+roda a sua extensão, commita e faz push; `--full` fecha a semana e poda o que envelheceu.
+Pendências ficam em `## Now` (ordenada), `## Blocked`, `## Deferred` (pular exige motivo) e
+`## Debt`. Os cabeçalhos dos arquivos são fixos em inglês; o conteúdo pode ser em qualquer
+língua. Quem vem da 1.x: o início detecta o formato antigo e oferece a migração.
