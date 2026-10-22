@@ -35,6 +35,13 @@ done
 
 r3=$(make_repo nostate)
 expect "$([ -z "$(run startup "$r3")" ]; echo $?)" 'repo without STATE is silent'
+r4=$(make_repo declared); sf="$TEST_BASE/declared-files"; mkdir -p "$sf"; make_state "$sf" "$state20"
+sfw=$(cygpath -wl "$sf" 2> /dev/null || printf '%s' "$sf") # the hook may run the .ps1, which needs the Windows form
+printf '%s
+' "**Session files:** \`$sfw\` — personal." > "$r4/CLAUDE.local.md"
+o=$(run startup "$r4")
+assert_match "$o" '^# Session start by hook \(startup\) — ' 'session files declared elsewhere: hook prints'
+assert_match "$o" '^- Session files: `' 'session files declared elsewhere: the script resolved the folder'
 mkdir -p "$TEST_BASE/plain"
 expect "$([ -z "$(run startup "$TEST_BASE/plain")" ]; echo $?)" 'folder without git is silent'
 

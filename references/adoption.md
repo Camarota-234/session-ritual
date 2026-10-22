@@ -33,6 +33,13 @@ writes the same session twice, at different granularities, and nothing says whic
 In every case, update references to the old name in the repo's end-of-session instructions
 (`CLAUDE.md`), or the next session writes to the wrong file.
 
+## A repo that is not yours
+
+A repo shared with a team should not carry a personal `SESSION_STATE.md`. Keep the two files in a
+folder of your own and declare it in the repo's untracked `CLAUDE.local.md`:
+`**Session files:** `<folder>``. Details in `files.md`, "Where the files live". Never create the
+files in the repo "just this once": that is what the declaration prevents.
+
 ## Migrating a 1.x STATE
 
 The script prints `**STATE in 1.x format**` when `SESSION_STATE.md` exists and has no

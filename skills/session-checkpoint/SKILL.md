@@ -49,6 +49,6 @@ No entry today yet: create `## YYYY-MM-DD — <provisional title>` with only thi
 
 ## 5. Commit
 
-`git add` the session's files and the two docs; commit `docs: checkpoint HH:MM — <summary>`.
-**No push, no extension, nothing slow.** One line back: what was written, and that the next
+`git add` the session's files and the two docs (a `Session files:` folder: `git -C <it>`, never
+the project repo); commit `docs: checkpoint HH:MM — <summary>`. **No push, no extension, nothing slow.** One line back: what was written, and that the next
 session with this focus opens on the block.

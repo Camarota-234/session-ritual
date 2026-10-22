@@ -22,9 +22,8 @@ If the user only meant a task, point to `session-checkpoint` and stop.
 
 ## 2. Synthesize
 
-Before writing, assemble: what was done (features, fixes, refactors), decisions (choices and
-trade-offs not obvious from the code), what is left, what comes next. Today's `### checkpoint`
-sub-blocks enter this synthesis.
+Before writing, assemble: what was done, decisions (choices and trade-offs not obvious from the
+code), what is left, what comes next. Today's `### checkpoint` sub-blocks enter this synthesis.
 
 **Separate what was verified from what was only written.** Committed code, a green test and a
 feature exercised in production are not the same thing. Each done item carries its evidence
@@ -33,7 +32,9 @@ not exercised*.
 
 ## 3. Rewrite SESSION_STATE.md
 
-A photo of now, not a diary: if something is no longer true, it is gone. In this order:
+A photo of now, not a diary: if something is no longer true, it is gone. **A 1.x STATE** (no
+`## In progress`; the start script flags it) is migrated first, with the table in
+`../../references/adoption.md`, in the same commit; say so in the step 1 line. In this order:
 
 - `## In progress`: keep only the blocks still in flight. For each block not touched today,
   ask in one batched question whether it stays. Blocks of tasks finished today are deleted.
@@ -51,7 +52,7 @@ A photo of now, not a diary: if something is no longer true, it is gone. In this
   Now 7, one line each elsewhere, 80 in all). Over: cut now; what leaves is already in the LOG.
 
 On a feature branch, only this repo's `## In progress` block and the LOG are written
-(`../../references/branches.md`). With sibling repos, rewrite the STATE of each repo the
+(`../../references/branches.md`; not when the files live elsewhere). With sibling repos, rewrite the STATE of each repo the
 session touched (`../../references/multi-repo.md`).
 
 ## 4. Prune (`--full` only)
@@ -64,7 +65,7 @@ under `**Pruned:**`:
 3. `## Blocked` items older than 4 weeks: still waiting?
 4. `## In progress` blocks whose branch has no commit for 7 days.
 
-This is the one place where age counts. The daily briefing never nags by date.
+Age counts only here; the daily briefing never nags by date.
 
 ## 5. The LOG entry
 
@@ -96,5 +97,8 @@ on rotation) and commit:
 
 Push to the current branch. Confirm in one line that it went up. If the push fails, say the
 error; do not claim the session is closed.
+
+**`Session files:` declared** (`files.md`): all of this happens in that folder; commit and push
+**its** repo (`git -C`; nothing to commit is fine). Leave the project repo alone.
 
 Not part of the ritual: the test suite (the repo's own rules decide), the code graph, deploys.

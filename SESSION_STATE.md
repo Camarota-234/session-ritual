@@ -19,12 +19,15 @@ The author's personal extension lives in `Camarota-234/claude-config` (`ritual-e
 - **2.0.0 on `main`** (22/10, `56805e6`; built 21/10 from `d2c362d`): three skills (`session-start`, `session-checkpoint`, `session-end`), `references/` (files, adoption, multi-repo, branches, extension), `scripts/session-start.ps1` and `.sh` with identical output, `hooks/hooks.json` → `scripts/session-hook.sh`, README in English, CHANGELOG, MIT. `claude plugin validate .` passes clean.
 - Tests green on 21/10: `tests/session-start.tests.ps1` (30 checks), `tests/session-start.tests.sh` (parity with the ps1 included), `tests/session-hook.tests.sh`.
 - `origin/main` 1.4.0 (`1d3db50`) merged into `v2.0` on 22/10, manifests stay 2.0.0. Its `## A exercitar` is ported as `## To exercise` (`references/files.md`, the three skills, `tests/format-contract.tests.sh`; green 22/10).
-- Installed on this PC: 2.0.0 (22/10). Notebook: 1.3.0.
+- Two gaps found on 22/10 in the open Avex sessions (four repos still on a 1.x STATE, one keeping its files in the vault) closed in the same day: `session-end` migrates a 1.x STATE through `adoption.md`; a `**Session files:** `<folder>`` line in `CLAUDE.local.md`/`CLAUDE.md` moves the STATE and LOG (script `.ps1`/`.sh`, hook, three skills, `files.md` "Where the files live"; tests green).
+- Installed on this PC: 2.0.0 (22/10), plus the fixes above once pushed. Notebook: 1.3.0.
 
 ## To exercise
 - The three 2.0 skills in a real session — **proof:** `/session-ritual:session-start`, `-checkpoint` and `-end` run after reinstall with no 1.x warning (since 21/10)
 - The hook under Claude Code — **proof:** a fresh session in a repo with a STATE opens with the `# Session start by hook` block (since 21/10)
 - The 1.x → 2.0 migration done by the skill — **proof:** a 1.x STATE in another repo gets the migration offer and a one-commit result (since 21/10)
+- `session-end` on a 1.x STATE — **proof:** in a repo still on 1.x, `/session-ritual:session-end` migrates it and the day's commit carries the 2.0 file (since 22/10)
+- `**Session files:**` in `avex-connect-hub` — **proof:** `/session-ritual:session-start` there prints `- Session files:` with the vault folder and creates no `SESSION_*.md` in the repo; `session-end` commits only the vault (since 22/10)
 - `## To exercise` itself — **proof:** a `session-end` turns a *Done, not exercised* into a line here, and a no-focus briefing prints `### To exercise (N)` (since 22/10)
 
 ## Now

@@ -4,6 +4,27 @@ The single source for the format of the two files the ritual writes. The three s
 this file; they do not repeat it. Section headers and bullet labels below are **fixed** (the
 scripts and the quotas depend on them); the text inside each line is free, in any language.
 
+## Where the files live
+
+By default `SESSION_STATE.md` and `SESSION_LOG.md` sit at the repo root. A repo that cannot hold
+them (shared with a team that should not see a personal ritual) declares the folder on one line
+of its `CLAUDE.local.md` (untracked) or `CLAUDE.md`, `CLAUDE.local.md` first:
+
+```markdown
+**Session files:** `C:\vault\avex\my-project` — personal, outside the repo.
+```
+
+- The start script reads the STATE there and prints `- Session files: <folder> (declared in
+  <file>)`; the hook fires for such repos too. A folder that does not exist is reported, and the
+  repo root is used.
+- The skills read and write the two files in that folder and **never create them in the repo**.
+  The monthly rotation (below) happens there too.
+- **Git:** `session-end` and `session-checkpoint` commit the two files in the repo that contains
+  that folder (`git -C <folder>`; `pull --rebase` first, push only on end). They do **not** pull,
+  commit or push the project repo: its own rules decide (shared `main`, PR flow).
+- The feature-branch rule (`branches.md`) does not apply: the branch is the project's, the files
+  are not.
+
 ## SESSION_STATE.md
 
 A photo of now, rewritten by `session-end`. Never a diary.

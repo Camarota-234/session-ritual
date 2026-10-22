@@ -61,6 +61,13 @@ The STATE belongs to the main branch. A feature branch or worktree writes only i
 `## In progress` block and the LOG; on merge, the main branch's STATE wins. Details in
 `references/branches.md`.
 
+## A repo that is not yours
+
+For a repo shared with a team, keep the two files in a folder of your own and declare it in the
+repo's untracked `CLAUDE.local.md`: ``**Session files:** `<folder>` ``. The script, the hook and the
+three skills read and write there, commit only that folder's repo, and leave the project repo
+alone. See `references/files.md`, "Where the files live".
+
 ## Personal extension
 
 Steps that only make sense for you (sync a notes vault, update an index outside the repo,

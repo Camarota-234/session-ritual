@@ -10,8 +10,8 @@ files="$root/references/files.md"
 state_headers='In progress|Current state|To exercise|Now|Blocked|Deferred|Debt'
 
 body_lines() { awk '/^---$/ { c++; if (c == 2) { f = 1; next } } f { n++ } END { print n + 0 }' "$1"; }
-# headers (`## x`) of the first fenced template in files.md, in order, joined by '|'
-template_headers() { awk '/^```markdown/ { if (!seen) { t = 1; seen = 1; next } } /^```/ { t = 0 } t && /^## / { sub(/^## /, ""); printf "%s%s", sep, $0; sep = "|" }' "$files"; }
+# headers (`## x`) of the STATE template in files.md (the first markdown fence that has any), joined by '|'
+template_headers() { awk '/^```markdown/ { t = 1; h = ""; sep = ""; next } /^```/ { if (t && h != "" && !done) { print h; done = 1 } t = 0 } t && /^## / { sub(/^## /, ""); h = h sep $0; sep = "|" }' "$files"; }
 
 # body caps (spec: start 80, checkpoint 50, end 100)
 expect "$([ "$(body_lines "$root/skills/session-start/SKILL.md")" -le 80 ]; echo $?)" 'cap: session-start body <= 80 lines'
@@ -29,6 +29,16 @@ for s in session-start session-checkpoint session-end; do
     assert_match "$(cat "$root/skills/$s/SKILL.md")" 'To exercise' "skill $s mentions To exercise"
 done
 assert_match "$(cat "$root/references/branches.md")" '`## To exercise`' 'branches.md: feature branch writes nothing in To exercise'
+
+# files that live outside the repo, and 1.x STATEs met at the end
+assert_match "$(grep -E '^## ' "$files")" '^## Where the files live$' 'files.md: has a "Where the files live" section'
+assert_match "$(cat "$files")" '\*\*Session files:\*\*' 'files.md: documents the Session files declaration'
+for s in session-start session-checkpoint session-end; do
+    assert_match "$(cat "$root/skills/$s/SKILL.md")" 'Session files' "skill $s knows the Session files folder"
+done
+assert_match "$(cat "$root/skills/session-end/SKILL.md")" 'adoption\.md' 'session-end: migrates a 1.x STATE through adoption.md'
+assert_match "$(cat "$root/skills/session-end/SKILL.md")" '1\.x' 'session-end: checks for a 1.x STATE'
+assert_match "$(cat "$root/references/branches.md")" 'Session files' 'branches.md: the feature-branch rule does not apply to files kept elsewhere'
 
 # 1.4.0 name: only the migration table may carry the Portuguese header
 leak=$(grep -rl '## A exercitar' "$root/skills" "$root/references" "$root/scripts" 2> /dev/null | grep -v 'references/adoption.md' || true)

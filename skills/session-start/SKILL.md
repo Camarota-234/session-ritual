@@ -24,6 +24,7 @@ its lines:
 - `**Commits after the last /session-end**` → the STATE may be stale; say so, and treat `## Now`
   as possibly outdated.
 - `**Pull failed**` → enters the briefing as is; do not retry.
+- `Session files:` → STATE and LOG live in that folder (`files.md`): read them there, create nothing in the repo.
 
 No STATE and no LOG, or a repo that logs another way: `adoption.md`. Never run the test suite here.
 
@@ -79,6 +80,5 @@ Close by proposing, not asking open-ended: the first In-progress block, or else 
 
 Then go straight to the work; what does not touch the focus does not enter the briefing.
 
-In both modes: an `(assumed)` item enters as a hypothesis ("the STATE says X is broken, not
-measured"); if it defines the day's work, confirming it is step one. `## Deferred` never
-enters the briefing. A date on an item is context, never a nag.
+In both modes: an `(assumed)` item enters as a hypothesis, never a fact (if it defines the day's
+work, confirming it is step one). `## Deferred` never enters. A date is context, never a nag.

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # session-hook.sh — SessionStart hook shipped by the session-ritual plugin.
 # Reads the hook event JSON on stdin (source, cwd). On "startup" and "compact", when cwd is
-# inside a git repo that has SESSION_STATE.md at its root, prints the session-start script
+# inside a git repo that has SESSION_STATE.md at its root (or declares where it lives), prints the session-start script
 # output so the briefing never depends on the model remembering to run it. Pull only on
 # startup. Any other source, or a repo without STATE, prints nothing. Exit 0 always.
 set -u
@@ -18,7 +18,11 @@ if command -v cygpath > /dev/null 2>&1; then cwd=$(cygpath -u "$cwd" 2> /dev/nul
 case "$source" in startup | compact) ;; *) exit 0 ;; esac
 [ -d "$cwd" ] || exit 0
 root=$(git -C "$cwd" rev-parse --show-toplevel 2> /dev/null) || exit 0
-[ -n "$root" ] && [ -f "$root/SESSION_STATE.md" ] || exit 0
+[ -n "$root" ] || exit 0
+# STATE at the root, or a **Session files:** line saying it lives elsewhere (the script resolves it)
+if [ ! -f "$root/SESSION_STATE.md" ]; then
+    grep -qE '^\*\*Session files:\*\*[[:space:]]*`[^`]+`' "$root/CLAUDE.local.md" "$root/CLAUDE.md" 2> /dev/null || exit 0
+fi
 
 echo "# Session start by hook ($source) — $root"
 echo

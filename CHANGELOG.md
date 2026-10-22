@@ -17,6 +17,10 @@ the migration (`references/adoption.md`).
   `session-end` fills it from the LOG's *Done, not exercised*; the line leaves when the proof
   happens; the briefing lists it (all of it without a focus, only what the focus can prove with one).
   Quota: 6 items. A 1.4.0 STATE migrates with the rest (`references/adoption.md`).
+- **Files kept outside the repo:** a `**Session files:** `<folder>`` line in `CLAUDE.local.md` (or
+  `CLAUDE.md`) moves the STATE and the LOG there, for repos shared with a team. Script, hook and
+  skills follow it; `session-end` and `session-checkpoint` commit only that folder's repo and never
+  touch the project repo. `session-end` also migrates a 1.x STATE it meets, through `adoption.md`.
 - **Pending items by what to do with them:** `## Now` (ordered, up to 7), `## Blocked`,
   `## Deferred` (skipping requires a reason), `## Debt`. `## Next session` is gone (it is `## Now`).
   `(measured)` / `(assumed)` stays, at the end of the line.

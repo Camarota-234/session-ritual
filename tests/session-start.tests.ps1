@@ -175,6 +175,31 @@ try {
     Expect ($o -notmatch 'NativeCommandError|CategoryInfo|FullyQualifiedErrorId|caractere') 'pull diverged: no PowerShell error noise'
     Expect ($o -match '(?m)^- Branch: main — \*\*1 commit\(s\) ahead of remote\*\* — \*\*1 commit\(s\) behind remote\*\*') 'pull diverged: ahead and behind'
 
+    # Session files declared elsewhere (STATE and LOG outside the repo)
+    $sf = Join-Path $base 'sf-files'; New-Item -ItemType Directory -Force $sf | Out-Null; Set-State $sf $state20
+    $sf1 = Join-Path $base 'sf-old'; New-Item -ItemType Directory -Force $sf1 | Out-Null; Set-State $sf1 $state1x
+    $bt = [string][char]96
+    function Set-Decl([string]$repo, [string]$file, [string]$folder) {
+        Set-Content (Join-Path $repo $file) ("# notes`n**Session files:** $bt$folder$bt - personal.") -Encoding UTF8
+    }
+    $r = New-Repo 'declared'; git -C $r checkout -q -b feat/y; Set-Decl $r 'CLAUDE.local.md' $sf
+    $o = Run $r
+    Expect ($o -match '(?m)^- Session files: `[^`]+sf-files` \(declared in CLAUDE\.local\.md\)\s*$') 'session files declared: line with the folder and its source'
+    Expect ($o -notmatch '1\.x format') 'session files declared: reads the 2.0 STATE in that folder'
+    Expect ($o -notmatch 'Feature branch') 'session files declared: no feature-branch line'
+    Expect ($o -match 'Commits after the last `/session-end` \(2000-01-01\)') 'session files declared: last-session date comes from that STATE'
+    $r = New-Repo 'declared-old'; Set-Decl $r 'CLAUDE.local.md' $sf1
+    Expect ((Run $r) -match '\*\*STATE in 1\.x format\*\*') 'session files declared: 1.x STATE there is flagged'
+    $r = New-Repo 'declared-md'; Set-Decl $r 'CLAUDE.md' $sf
+    Expect ((Run $r) -match 'declared in CLAUDE\.md\)') 'session files declared: CLAUDE.md works'
+    $r = New-Repo 'declared-both'; Set-Decl $r 'CLAUDE.md' $sf; Set-Decl $r 'CLAUDE.local.md' $sf1
+    $o = Run $r
+    Expect (($o -match 'declared in CLAUDE\.local\.md\)') -and ($o -match '1\.x format')) 'session files declared: CLAUDE.local.md wins over CLAUDE.md'
+    $r = New-Repo 'declared-missing'; Set-Decl $r 'CLAUDE.local.md' (Join-Path $base 'nope-folder')
+    $o = Run $r
+    Expect ($o -match '\*\*Session files folder not found:\*\* `[^`]+nope-folder` \(declared in CLAUDE\.local\.md\) — using the repo root\.') 'session files declared: missing folder is reported'
+    Expect ($o -notmatch '1\.x format') 'session files declared: missing folder falls back to the repo root (no STATE there)'
+
     # missing repo path
     $o = (& powershell -NoProfile -ExecutionPolicy Bypass -File $script -Repo (Join-Path $base 'nope') -NoPull 2>&1 | Out-String)
     Expect ($o -match 'path does not exist') 'missing repo path: message'

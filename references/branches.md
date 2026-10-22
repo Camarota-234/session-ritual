@@ -6,6 +6,10 @@ tell the truth.
 
 ## The rule
 
+This applies when the files are in the repo. With a `**Session files:**` folder (`files.md`, "Where
+the files live") the branch is the project's and the files are not: there is no ownership line and
+every branch writes the STATE whole.
+
 - **The STATE belongs to the main branch** (`main`, `master`, or what `origin/HEAD` points to).
   Only `session-end` on the main branch rewrites it whole.
 - **On a feature branch or worktree**, `session-checkpoint` and `session-end` write:

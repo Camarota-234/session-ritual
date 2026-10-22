@@ -3,6 +3,9 @@
 # SESSION_STATE.md): pull --ff-only (unless -NoPull), branch with ahead/behind, main-branch
 # ownership note on feature branches, 1.x STATE detection, commits after the last
 # /session-end, modified files, last 5 commits.
+# SESSION_STATE.md and SESSION_LOG.md normally sit at the repo root; a repo that cannot hold them
+# (shared with a team) declares the folder on a `**Session files:** `<folder>`` line of its
+# CLAUDE.local.md or CLAUDE.md, and every STATE read below happens there.
 # Output: a Markdown block ready for the "Repository" section of the briefing.
 # Same output, line by line, as scripts/session-start.sh. Exit 0 always.
 [CmdletBinding()]
@@ -14,8 +17,27 @@ param(
 $ErrorActionPreference = 'Continue'
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
+# Where the session files live: the folder declared on a `**Session files:** `<folder>`` line
+# (CLAUDE.local.md first, then CLAUDE.md), or the repo root. Dir is the effective folder.
+function Get-StateInfo([string]$root) {
+    foreach ($f in @('CLAUDE.local.md', 'CLAUDE.md')) {
+        $p = Join-Path $root $f
+        if (-not (Test-Path $p)) { continue }
+        foreach ($l in (Get-Content $p -Encoding UTF8)) {
+            if ($l -match '^\*\*Session files:\*\*\s*`([^`]+)`') {
+                $raw = $Matches[1].Trim()
+                if (Test-Path $raw -PathType Container) {
+                    return @{ Dir = (Resolve-Path $raw).Path; Source = $f; Raw = $raw; Missing = $false }
+                }
+                return @{ Dir = $root; Source = $f; Raw = $raw; Missing = $true }
+            }
+        }
+    }
+    return @{ Dir = $root; Source = $null; Raw = $null; Missing = $false }
+}
+
 function Read-State([string]$root) {
-    $state = Join-Path $root 'SESSION_STATE.md'
+    $state = Join-Path (Get-StateInfo $root).Dir 'SESSION_STATE.md'
     if (-not (Test-Path $state)) { return $null }
     return @(Get-Content $state -Encoding UTF8 | ForEach-Object { $_ -replace "`r$", '' })
 }
@@ -62,6 +84,12 @@ function Report([string]$root, [bool]$pull) {
     $name = Split-Path $root -Leaf
     Write-Output "### $name"
     Write-Output "- Path: ``$root``"
+    $info = Get-StateInfo $root
+    if ($info.Missing) {
+        Write-Output "- **Session files folder not found:** ``$($info.Raw)`` (declared in $($info.Source)) — using the repo root."
+    } elseif ($info.Source) {
+        Write-Output "- Session files: ``$($info.Dir)`` (declared in $($info.Source))"
+    }
     if (-not (Test-Path (Join-Path $root '.git'))) {
         Write-Output "- Not a git repository."
         Write-Output ""
@@ -90,7 +118,7 @@ function Report([string]$root, [bool]$pull) {
     if ($head -match 'behind (\d+)') { $pos += " — **$($Matches[1]) commit(s) behind remote**" }
     Write-Output "- Branch: $branch$pos"
     $main = Get-MainBranch $root
-    if ($branch -ne '(detached)' -and $main -and $branch -ne $main) {
+    if ($branch -ne '(detached)' -and $main -and $branch -ne $main -and ($info.Dir -eq $root)) {
         Write-Output "- Feature branch: STATE is owned by ``$main``; this branch writes only its ``## In progress`` block and the LOG."
     }
     Write-Output "- Last commit: $(git -C $root log --oneline -1 2>$null)"

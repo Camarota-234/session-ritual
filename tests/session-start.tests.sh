@@ -148,6 +148,27 @@ assert_match "$o" '^- \*\*Pull failed\*\* — the repo may be out of date: [^ ]'
 assert_match "$o" '^- Branch: main — \*\*1 commit\(s\) ahead of remote\*\* — \*\*1 commit\(s\) behind remote\*\*$' 'pull diverged: ahead and behind'
 diverged="$r"
 
+# Session files declared elsewhere (STATE and LOG outside the repo)
+sf="$TEST_BASE/sf-files"; mkdir -p "$sf"; make_state "$sf" "$state20"
+sf1="$TEST_BASE/sf-old"; mkdir -p "$sf1"; make_state "$sf1" "$state1x"
+set_decl() { printf '%s\n' '# notes' "**Session files:** \`$3\` — personal." > "$1/$2"; } # set_decl <repo> <file> <folder>
+r=$(make_repo declared); git -C "$r" checkout -q -b feat/y; set_decl "$r" CLAUDE.local.md "$sf"
+o=$(run "$r")
+assert_match "$o" '^- Session files: `[^`]+sf-files` \(declared in CLAUDE\.local\.md\)$' 'session files declared: line with the folder and its source'
+assert_no_match "$o" '1\.x format' 'session files declared: reads the 2.0 STATE in that folder'
+assert_no_match "$o" 'Feature branch' 'session files declared: no feature-branch line'
+assert_match "$o" 'Commits after the last `/session-end` \(2000-01-01\)' 'session files declared: last-session date comes from that STATE'
+r=$(make_repo declared-old); set_decl "$r" CLAUDE.local.md "$sf1"
+assert_match "$(run "$r")" '\*\*STATE in 1\.x format\*\*' 'session files declared: 1.x STATE there is flagged'
+r=$(make_repo declared-md); set_decl "$r" CLAUDE.md "$sf"
+assert_match "$(run "$r")" 'declared in CLAUDE\.md\)' 'session files declared: CLAUDE.md works'
+r=$(make_repo declared-both); set_decl "$r" CLAUDE.md "$sf"; set_decl "$r" CLAUDE.local.md "$sf1"; o=$(run "$r")
+assert_match "$o" 'declared in CLAUDE\.local\.md\)' 'session files declared: CLAUDE.local.md wins over CLAUDE.md'
+assert_match "$o" '1\.x format' 'session files declared: CLAUDE.local.md wins (its 1.x STATE is the one read)'
+r=$(make_repo declared-missing); set_decl "$r" CLAUDE.local.md "$TEST_BASE/nope-folder"; o=$(run "$r")
+assert_match "$o" '\*\*Session files folder not found:\*\* `[^`]+nope-folder` \(declared in CLAUDE\.local\.md\) — using the repo root\.' 'session files declared: missing folder is reported'
+assert_no_match "$o" '1\.x format' 'session files declared: missing folder falls back to the repo root (no STATE there)'
+
 # missing repo path
 o=$(bash "$script" --repo "$TEST_BASE/nope" --no-pull 2>&1); rc=$?
 assert_match "$o" 'path does not exist' 'missing repo path: message'
@@ -164,6 +185,10 @@ if [ -n "$ps" ] && command -v cygpath > /dev/null 2>&1; then
     a=$("$ps" -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -wl "$here/../scripts/session-start.ps1")" -Repo "$(cygpath -wl "$diverged")" 2>&1 | tr -d '\r' | tail -n +2)
     b=$(run_pull "$(cygpath -wl "$diverged")" | tail -n +2)
     if d=$(diff <(printf '%s\n' "$a") <(printf '%s\n' "$b")); then expect 0 'parity with ps1 (diverged pull)'; else expect 1 'parity with ps1 (diverged pull)'; printf '%s\n' "$d" | head -20; fi
+    r=$(make_repo parity-declared); set_decl "$r" CLAUDE.local.md "$(cygpath -wl "$sf")"
+    a=$("$ps" -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -wl "$here/../scripts/session-start.ps1")" -Repo "$(cygpath -wl "$r")" -NoPull 2>&1 | tr -d '\r' | tail -n +2)
+    b=$(run "$(cygpath -wl "$r")" | tail -n +2)
+    if d=$(diff <(printf '%s\n' "$a") <(printf '%s\n' "$b")); then expect 0 'parity with ps1 (session files declared)'; else expect 1 'parity with ps1 (session files declared)'; printf '%s\n' "$d" | head -20; fi
 else
     skip 'parity with ps1 (no PowerShell or cygpath)'
 fi

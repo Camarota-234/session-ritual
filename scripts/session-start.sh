@@ -2,6 +2,8 @@
 # session-start.sh — mechanical part of the session start (session-ritual plugin).
 # Same output, line by line, as scripts/session-start.ps1 (see that header for the
 # contract). Usage: session-start.sh [--repo <path>] [--no-pull]. Exit 0 always.
+# Session files declared elsewhere (a "**Session files:** `<folder>`" line in CLAUDE.local.md or
+# CLAUDE.md) are read from that folder; see the .ps1 header.
 set -u
 
 repo="$PWD"
@@ -22,8 +24,29 @@ to_posix_path() { # Windows path → Git Bash path when cygpath exists
 display_path() { # path as the host shows it (Windows long form under Git Bash)
     if command -v cygpath > /dev/null 2>&1; then cygpath -wl "$1"; else printf '%s' "$1"; fi
 }
+trim() { sed 's/^[[:space:]]*//;s/[[:space:]]*$//'; }
+declared_session_files() { # prints "<file>|<folder as written>" from the first declaring file, or nothing
+    local f line
+    for f in CLAUDE.local.md CLAUDE.md; do
+        [ -f "$1/$f" ] || continue
+        line=$(sed 's/\r$//' "$1/$f" | grep -E '^\*\*Session files:\*\*[[:space:]]*`[^`]+`' | head -n 1)
+        [ -n "$line" ] || continue
+        printf '%s|%s' "$f" "$(printf '%s' "$line" | grep -oE '`[^`]+`' | head -n 1 | tr -d '`' | trim)"
+        return
+    done
+}
+state_dir() { # the folder holding the session files: the declared one if it exists, else the repo root
+    local d p
+    d=$(declared_session_files "$1")
+    if [ -n "$d" ]; then
+        p=$(to_posix_path "${d#*|}")
+        if [ -d "$p" ]; then (cd "$p" && pwd); return; fi
+    fi
+    printf '%s' "$1"
+}
 read_state() { # lines of SESSION_STATE.md without CR; nothing if absent
-    [ -f "$1/SESSION_STATE.md" ] && sed 's/\r$//' "$1/SESSION_STATE.md"
+    local dir; dir=$(state_dir "$1")
+    [ -f "$dir/SESSION_STATE.md" ] && sed 's/\r$//' "$dir/SESSION_STATE.md"
 }
 main_branch() {
     local head
@@ -47,14 +70,20 @@ last_session_date() {
     read_state "$1" | grep -oE '^(last-session|ultima-sessao):[[:space:]]*[0-9]{4}-[0-9]{2}-[0-9]{2}' | head -n 1 | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}$'
 }
 is_legacy_state() {
-    [ -f "$1/SESSION_STATE.md" ] && ! read_state "$1" | grep -qx '## In progress'
+    [ -f "$(state_dir "$1")/SESSION_STATE.md" ] && ! read_state "$1" | grep -qx '## In progress'
 }
-trim() { sed 's/^[[:space:]]*//;s/[[:space:]]*$//'; }
 
 report() { # report <root> <pull 0|1>
     local root="$1" dopull="$2"
     echo "### $(basename "$root")"
     echo "- Path: \`$(display_path "$root")\`"
+    local decl sdir
+    decl=$(declared_session_files "$root"); sdir=$(state_dir "$root")
+    if [ -n "$decl" ] && [ "$sdir" = "$root" ]; then
+        echo "- **Session files folder not found:** \`${decl#*|}\` (declared in ${decl%%|*}) — using the repo root."
+    elif [ -n "$decl" ]; then
+        echo "- Session files: \`$(display_path "$sdir")\` (declared in ${decl%%|*})"
+    fi
     if [ ! -e "$root/.git" ]; then
         echo "- Not a git repository."
         echo
@@ -82,7 +111,7 @@ report() { # report <root> <pull 0|1>
     n=$(printf '%s' "$head" | grep -oE 'behind [0-9]+' | grep -oE '[0-9]+'); [ -n "$n" ] && pos="$pos — **$n commit(s) behind remote**"
     echo "- Branch: $branch$pos"
     main=$(main_branch "$root")
-    if [ "$branch" != '(detached)' ] && [ -n "$main" ] && [ "$branch" != "$main" ]; then
+    if [ "$branch" != '(detached)' ] && [ -n "$main" ] && [ "$branch" != "$main" ] && [ "$sdir" = "$root" ]; then
         echo "- Feature branch: STATE is owned by \`$main\`; this branch writes only its \`## In progress\` block and the LOG."
     fi
     echo "- Last commit: $(git -C "$root" log --oneline -1 2> /dev/null)"
