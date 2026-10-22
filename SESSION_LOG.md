@@ -1,5 +1,12 @@
 # Log de sessões — session-ritual
 
+## 2026-10-22 — v1.4.0: seção `## A exercitar` no STATE
+- **Resumo:** o que foi entregue e nunca rodou ganha seção própria no STATE, cada item com a prova observável que o fecha, em vez de ficar misturado no "Estado atual" ou enterrado no LOG.
+- **Feito:** `SKILL.md` com a seção no template, uma subseção de regras (prova é observação, não tarefa; não é fila de trabalho; sai quando a prova acontece; migração de STATE antigo), o briefing sem foco com `### A exercitar (N)` e o com foco com o item que o foco pode provar, "Durante a sessão" e checkpoint estendidos, passo 2 do fim ligando *Feito, não exercitado* à seção. README, manifests 1.4.0, `id` fora do `marketplace.json`; `claude plugin validate .` passou sem aviso. STATE deste repo migrado para o formato.
+- **Feito, não exercitado:** a 1.4.0 numa sessão real (briefing e fim). Instalada no pc em 22/10.
+- **Decisões:** a contagem fica com o modelo, não com o `session-start.ps1` — o STATE já é lido inteiro, e o script continua só lendo git. Sessão aberta em `C:\vault` com foco declarado provou o início com foco da 1.3.0.
+- **Pendências:** `skill-creator` e notebook seguem (medidas); `description` na listagem (suposta).
+
 ## 2026-10-21 (2) — 2.0.0 built on branch `v2.0`: three skills, hand-off block, hook and scripts shipped
 - **Summary:** the plugin was rebuilt as 2.0 on branch `v2.0` (three skills, `## In progress` hand-off, four pending sections, quotas, monthly rotation, hook plus bash/PowerShell scripts, English), not yet merged, installed or exercised in a session.
 - **Done:** spec and plan in `docs/superpowers/`; plan tasks 1–10, each committed with its tests or checks (`d2c362d`..`e46f95d`): `session-start.ps1` rewritten on the 2.0 output contract with 30 checks; `session-start.sh` with a parity diff against the ps1; `session-hook.sh` + `hooks/hooks.json` with 13 checks; five `references/`; three `SKILL.md` within their line caps (79/50/93); manifests 2.0.0 (`id` field removed, validate clean); README and CHANGELOG. Measured in October across nine Avex repos before designing: 30 app sessions in five weeks on one repo, 8 LOG entries in a day, 47 LOG commits in 20 days, checkpoint never used.

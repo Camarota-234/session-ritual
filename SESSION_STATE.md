@@ -20,6 +20,7 @@ The author's personal extension lives in `Camarota-234/claude-config` (`ritual-e
 - **2.0.0 on branch `v2.0`** (21/10, `d2c362d`..): three skills (`session-start`, `session-checkpoint`, `session-end`), `references/` (files, adoption, multi-repo, branches, extension), `scripts/session-start.ps1` and `.sh` with identical output, `hooks/hooks.json` → `scripts/session-hook.sh`, README in English, CHANGELOG, MIT. `claude plugin validate .` passes clean.
 - Tests green on 21/10: `tests/session-start.tests.ps1` (30 checks), `tests/session-start.tests.sh` (parity with the ps1 included), `tests/session-hook.tests.sh`.
 - **Never exercised:** the three 2.0 skills in a real session (plugin not reinstalled); the hook under Claude Code (only its script was tested); the 1.x → 2.0 migration done by the skill (this file followed `references/adoption.md` by hand).
+- `origin/main` 1.4.0 (`1d3db50`) merged into `v2.0` on 22/10; manifests stay 2.0.0 and the 1.4.0 LOG entry is kept. Open: item 5 of `## Now`.
 - Installed on this PC: 1.3.1. Notebook: 1.3.0.
 
 ## Now
@@ -27,6 +28,7 @@ The author's personal extension lives in `Camarota-234/claude-config` (`ritual-e
 2. Reinstall and exercise the three commands here, per the block above. [1h] (measured 21/10)
 3. `skill-creator` evals and `/skill-doctor` before tagging 2.0.0. [2h] (measured 08/09: never run)
 4. Run `session-start` once without `ritual-extend.md`, to prove nothing from the vault leaks into the base. (measured 08/09: never run)
+5. Decide whether the 1.4.0 `## A exercitar` section (on `origin/main`, 22/10) is ported into 2.0 or dropped. The merge kept the 2.0 skills and dropped the old `SKILL.md`, so the section exists only in the git history of `1d3db50`; 2.0 keeps "delivered, not exercised" inside `## Current state`. Porting touches `references/files.md`, the three skills and the section quotas. (measured 22/10)
 
 ## Blocked
 - (none)
