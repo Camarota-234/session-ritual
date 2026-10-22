@@ -20,7 +20,7 @@ The author's personal extension lives in `Camarota-234/claude-config` (`ritual-e
 - Tests green on 21/10: `tests/session-start.tests.ps1` (30 checks), `tests/session-start.tests.sh` (parity with the ps1 included), `tests/session-hook.tests.sh`.
 - `origin/main` 1.4.0 (`1d3db50`) merged into `v2.0` on 22/10, manifests stay 2.0.0. Its `## A exercitar` is ported as `## To exercise` (`references/files.md`, the three skills, `tests/format-contract.tests.sh`; green 22/10).
 - Two gaps found on 22/10 in the open Avex sessions (four repos still on a 1.x STATE, one keeping its files in the vault) closed in the same day: `session-end` migrates a 1.x STATE through `adoption.md`; a `**Session files:** `<folder>`` line in `CLAUDE.local.md`/`CLAUDE.md` moves the STATE and LOG (script `.ps1`/`.sh`, hook, three skills, `files.md` "Where the files live"; tests green).
-- Installed on this PC: 2.0.0 (22/10), plus the fixes above once pushed. Notebook: 1.3.0.
+- Installed on this PC: 2.0.1 (22/10, bumped because the plugin cache is keyed by version). Notebook: 1.3.0.
 
 ## To exercise
 - The three 2.0 skills in a real session — **proof:** `/session-ritual:session-start`, `-checkpoint` and `-end` run after reinstall with no 1.x warning (since 21/10)
