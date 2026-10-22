@@ -71,11 +71,12 @@ function Report([string]$root, [bool]$pull) {
     if (-not $hasRemote) {
         Write-Output "- No remote."
     } elseif ($pull) {
-        $out = (git -C $root pull --ff-only 2>&1 | Out-String)
+        # "$_" keeps only the stderr text; Out-String would append the ErrorRecord noise
+        $out = ((git -C $root pull --ff-only 2>&1 | ForEach-Object { "$_" }) -join "`n")
         if ($LASTEXITCODE -ne 0) {
             Write-Output "- **Pull failed** — the repo may be out of date: $($out.Trim() -replace '\s+', ' ')"
         } else {
-            Write-Output "- Pull: $((($out.Trim() -split "`n") | Select-Object -Last 1))"
+            Write-Output "- Pull: $((($out.Trim() -split "`n") | Select-Object -Last 1).Trim())"
         }
     } else {
         Write-Output "- Pull: Not run (--no-pull)."

@@ -40,7 +40,7 @@ siblings() {
     [ -n "$line" ] || return 0
     printf '%s\n' "$line" | grep -oE '`[^`]+`' | tr -d '`' | while IFS= read -r p; do
         p=$(to_posix_path "$(printf '%s' "$p" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')")
-        [ -d "$p/.git" ] && (cd "$p" && pwd)
+        [ -e "$p/.git" ] && (cd "$p" && pwd)
     done
 }
 last_session_date() {
@@ -55,7 +55,7 @@ report() { # report <root> <pull 0|1>
     local root="$1" dopull="$2"
     echo "### $(basename "$root")"
     echo "- Path: \`$(display_path "$root")\`"
-    if [ ! -d "$root/.git" ]; then
+    if [ ! -e "$root/.git" ]; then
         echo "- Not a git repository."
         echo
         return
