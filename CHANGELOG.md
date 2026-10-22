@@ -12,6 +12,11 @@ the migration (`references/adoption.md`).
   `## In progress` section of the STATE (plan position, what is in flight, the literal next step,
   up to 15 lines) and commits without pushing. The next start with that focus reads the block
   and nothing else.
+- **`## To exercise` (from 1.4.0, as `## A exercitar`):** what was delivered and never ran gets
+  its own STATE section, each item with the proof that closes it (an observation, not a task).
+  `session-end` fills it from the LOG's *Done, not exercised*; the line leaves when the proof
+  happens; the briefing lists it (all of it without a focus, only what the focus can prove with one).
+  Quota: 6 items. A 1.4.0 STATE migrates with the rest (`references/adoption.md`).
 - **Pending items by what to do with them:** `## Now` (ordered, up to 7), `## Blocked`,
   `## Deferred` (skipping requires a reason), `## Debt`. `## Next session` is gone (it is `## Now`).
   `(measured)` / `(assumed)` stays, at the end of the line.

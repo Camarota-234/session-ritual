@@ -61,6 +61,21 @@ r=$(make_repo legacy); make_state "$r" "$state1x"
 assert_match "$(run "$r")" '^- \*\*STATE in 1\.x format\*\* — migrate before the briefing: see references/adoption\.md\.$' 'STATE 1.x: legacy line'
 r=$(make_repo modern); make_state "$r" "$state20"
 assert_no_match "$(run "$r")" '1\.x format' 'STATE 2.0: no legacy line'
+r=$(make_repo toexercise); make_state "$r" '---
+last-session: 2000-01-01
+---
+## In progress
+## Current state
+- x
+## To exercise
+- y — **proof:** z (since 01/01)
+## Now
+1. z'
+assert_no_match "$(run "$r")" '1\.x format' 'STATE 2.0 with ## To exercise: no legacy line'
+r=$(make_repo legacy-exercitar); make_state "$r" "$state1x
+## A exercitar
+- y — **prova:** z (desde 01/01)"
+assert_match "$(run "$r")" '^- \*\*STATE in 1\.x format\*\*' 'STATE 1.4.0 (## A exercitar, no ## In progress): legacy line'
 
 # commits after last end
 r=$(make_repo after-legacy); make_state "$r" "$state1x"; o=$(run "$r")

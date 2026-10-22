@@ -97,6 +97,11 @@ try {
     # STATE 2.0
     $r = New-Repo 'modern'; Set-State $r $state20
     Expect ((Run $r) -notmatch '1\.x format') 'STATE 2.0: no legacy line'
+    $stateEx = (@('---', 'last-session: 2000-01-01', '---', '## In progress', '## Current state', '- x', '## To exercise', '- y — **proof:** z (since 01/01)', '## Now', '1. z') -join "`n")
+    $r = New-Repo 'toexercise'; Set-State $r $stateEx
+    Expect ((Run $r) -notmatch '1\.x format') 'STATE 2.0 with ## To exercise: no legacy line'
+    $r = New-Repo 'legacy-exercitar'; Set-State $r ($state1x + "`n## A exercitar`n- y — **prova:** z (desde 01/01)")
+    Expect ((Run $r) -match '\*\*STATE in 1\.x format\*\*') 'STATE 1.4.0 (## A exercitar, no ## In progress): legacy line'
 
     # commits after last end (ultima-sessao)
     $r = New-Repo 'after-legacy'; Set-State $r $state1x

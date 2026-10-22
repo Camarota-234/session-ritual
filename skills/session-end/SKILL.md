@@ -37,15 +37,18 @@ A photo of now, not a diary: if something is no longer true, it is gone. In this
 
 - `## In progress`: keep only the blocks still in flight. For each block not touched today,
   ask in one batched question whether it stays. Blocks of tasks finished today are deleted.
-- `## Current state`: what works and what was delivered unexercised, each with its pointer.
-  12 bullets of up to 2 lines; a longer bullet becomes a pointer to the LOG.
+- `## Current state`: what works, each with the pointer to its evidence. 12 bullets of up to
+  2 lines; a longer bullet becomes a pointer to the LOG.
+- `## To exercise`: each `**Done, not exercised:**` item of today's entry becomes a line with
+  its **proof**. A line whose proof happened today leaves, and its evidence goes to `## Current
+  state` as a pointer. 6 items; an empty section is left out.
 - Pending items, in the four sections, using the moves from `files.md`: a closed item
   disappears; "leave it for later" goes to `## Deferred` **with a reason**; an unblocked item
   returns to `## Now` where the user says; a new item is born in `## Now` or `## Deferred`.
   Every line ends with `(measured DD/MM)` or `(assumed)`. `## Now` is ordered and has up to 7.
 - Frontmatter: `last-session` = today; on `--full`, also `last-full-end`.
-- **Check the quotas before going on** (header 10, block 15, Current state 12, Now 7, one line
-  each elsewhere, 80 in all). Over: cut now; what leaves is already in the LOG.
+- **Check the quotas before going on** (header 10, block 15, Current state 12, To exercise 6,
+  Now 7, one line each elsewhere, 80 in all). Over: cut now; what leaves is already in the LOG.
 
 On a feature branch, only this repo's `## In progress` block and the LOG are written
 (`../../references/branches.md`). With sibling repos, rewrite the STATE of each repo the

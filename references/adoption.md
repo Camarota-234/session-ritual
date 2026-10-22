@@ -46,6 +46,7 @@ The script prints `**STATE in 1.x format**` when `SESSION_STATE.md` exists and h
 | `**Escopo deste arquivo:**` | `**Scope:**` |
 | `**Repos-irmãos:**` | `**Sibling repos:**` |
 | `## Estado atual` | `## Current state` |
+| `## A exercitar` (1.4.0) | `## To exercise` (`**prova:**` → `**proof:**`, `(desde DD/MM)` → `(since DD/MM)`; up to 6, the rest → `## Deferred`) |
 | `## Próxima sessão` | `## Now` (same order, up to 7; the rest → `## Deferred` with reason "cut in the 2.0 migration") |
 | `## Pendências` with `(aguardando …)` | `## Blocked` as `(waiting on <who>: <condition>)` |
 | `## Pendências`, also listed in Próxima sessão | already in `## Now`; do not duplicate |

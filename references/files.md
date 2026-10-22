@@ -29,7 +29,9 @@ last-full-end: 2026-10-16
 
 ## Current state
 - <what works, with the pointer to its evidence: execution id, commit, query>
-- <what was delivered and **never exercised**, said that way>
+
+## To exercise
+- <what was delivered and never ran> — **proof:** <what you see when it runs> (since DD/MM)
 
 ## Now
 1. <what to do next, in order — position is the priority> [2h] (measured 20/10)
@@ -59,6 +61,7 @@ twice. `session-end` checks these before committing; what is cut is already in t
 | header (frontmatter, title, Scope, Sibling repos) | 10 lines |
 | `## In progress` | 15 lines per `###` block |
 | `## Current state` | 12 bullets, each up to 2 lines |
+| `## To exercise` | 6 items, each up to 2 lines (the item and its proof) |
 | `## Now` | 7 items |
 | `## Blocked`, `## Deferred`, `## Debt` | 1 line per item |
 | **whole file** | **80 lines** |
@@ -111,6 +114,29 @@ Moves:
   days. One batched question each ("delete these N?"); what is deleted goes to the day's LOG entry
   under `**Pruned:**`. A date is never a nag in the daily briefing; pruning is where age counts.
 
+## To exercise
+
+Delivered is not proven, and what never ran drops out of sight: in the LOG it is buried in old
+entries, in `## Current state` it blends with what works. This section keeps it visible until
+someone sees it run.
+
+- **The proof is written with the item, and it is an observation, not a task:** "the briefing
+  comes out with no stop and no vault block", "the execution writes the row in `orders`" — not
+  "test the briefing". If no proof can be written, it is not an item to exercise: it is an
+  `(assumed)` item in `## Now` or `## Deferred`.
+- **It is not a work queue.** An item enters `## Now` only if someone decides that proving it is
+  the day's work; normally it is proven in passing, by a focus that touches it. That is why the
+  briefing with a focus mentions it.
+- **Who writes it:** `session-end`. Each `**Done, not exercised:**` item of the day's LOG entry
+  becomes a line here, with its proof. `session-checkpoint` does not touch it.
+- **It leaves when the proof happens:** delete the line right then (a one-line edit, no commit of
+  its own); the evidence goes to `## Current state` as a pointer at the next end. A proof that
+  failed also removes the line: it becomes a measured item in `## Now`, with what was seen.
+- An empty section is left out of the file.
+- **Migrating:** a 1.4.0 STATE has this section under its Portuguese name (`adoption.md`). In older STATEs, lines in
+  the current state or in the pending list that say *never exercised* / *did not run* move here
+  at the first end, gaining their proof.
+
 ## In progress blocks
 
 The hand-off between two sessions. One `###` per task in flight, first section after the header.
@@ -139,7 +165,7 @@ Append-only, newest entry on top. What happened in each session.
 ## 2026-10-21 — <short title of the session>
 - **Summary:** <one sentence: what the session changed in the project — this is what the start reads>
 - **Done:** ... (with the evidence: test run, query checked, execution id)
-- **Done, not exercised:** ... (delivered without proof that it runs; omit if none)
+- **Done, not exercised:** ... (delivered without proof that it runs; each item becomes a line in `## To exercise` of the STATE; omit if none)
 - **Decisions:** ... (only what is not obvious from the code; omit if none)
 - **Pending:** ... (each one measured or assumed, with the date it appeared)
 - **Pruned:** ... (only on --full, if any)

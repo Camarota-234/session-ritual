@@ -25,28 +25,26 @@ its lines:
   as possibly outdated.
 - `**Pull failed**` → enters the briefing as is; do not retry.
 
-No STATE and no LOG, or a repo that logs sessions another way: see `adoption.md`. Never run the
-test suite here: it costs time to say the repo is as it was left, and a red end is in the LOG.
+No STATE and no LOG, or a repo that logs another way: `adoption.md`. Never run the test suite here.
 
 ## 2. Read
 
 `SESSION_STATE.md` whole, for the current repo and each sibling (`../../references/multi-repo.md`).
 From `SESSION_LOG.md`, only the `**Summary:**` and `**Pending:**` bullets of the two most recent
-entries (1.x entries use `Resumo`/`Pendências`; an entry with no summary: its first 10 lines).
-When the LOG has fewer than two entries, complete with the previous month's file in
-`docs/sessions/`. Read the rest of an entry only when the focus touches it.
+entries (1.x labels, entries with no summary, a short LOG in a new month: `files.md`, "Reading
+rules"). The rest of an entry only when the focus touches it.
 
 ## 3. In progress first
 
-With a declared focus: look at `## In progress`. If a `###` block's title matches the focus,
-**the briefing is that block and nothing else**. Delete the block from the STATE as you take
-the task over (a one-line edit, no commit of its own) and start working. No matching block:
-go on to step 4. Without a focus: the block titles go to the top of the briefing (step 5).
+With a declared focus, look at `## In progress`: a `###` block whose title matches **is the
+briefing, and nothing else**. Delete it from the STATE as you take the task over (a one-line
+edit, no commit of its own) and start working. No match: step 4. Without a focus, the block
+titles go to the top of the briefing (step 5).
 
 ## 4. Extension
 
-If `~/.claude/ritual-extend.md` exists, run the steps under `## Start`
-(`../../references/extension.md`). No file, no section: nothing happens, nothing is said.
+If `~/.claude/ritual-extend.md` exists, run its `## Start` (`../../references/extension.md`);
+no file or section: nothing happens, nothing is said.
 
 ## 5. Briefing
 
@@ -62,6 +60,8 @@ If `~/.claude/ritual-extend.md` exists, run the steps under `## Start`
 <the `## Now` list, whole, in order>
 ### Blocked that changed
 <blocked items whose condition looks met, or "none">
+### To exercise (N)
+<each `## To exercise` item with its proof, one line; omit if empty>
 ```
 
 Close by proposing, not asking open-ended: the first In-progress block, or else item 1 of
@@ -74,10 +74,11 @@ Close by proposing, not asking open-ended: the first In-progress block, or else 
 - <script lines that matter: pull failed, commits after the last end, ahead/behind, modified files. Clean and up to date = one line>
 - <what in the STATE and the LOG touches the focus: the `## Now` item, a recent decision, evidence>
 - <if the focus is not in `## Now`: "not planned; goes ahead of <item 1>" — one sentence, no justification asked>
+- <a `## To exercise` item the focus can prove in passing, with its proof>
 ```
 
 Then go straight to the work; what does not touch the focus does not enter the briefing.
 
-In both modes: an item marked `(assumed)` enters as a hypothesis ("the STATE says X is broken,
-not measured"), never as a fact; if it defines the day's work, confirming it is step one.
-`## Deferred` never enters the briefing. A date on an item is context, never a nag.
+In both modes: an `(assumed)` item enters as a hypothesis ("the STATE says X is broken, not
+measured"); if it defines the day's work, confirming it is step one. `## Deferred` never
+enters the briefing. A date on an item is context, never a nag.

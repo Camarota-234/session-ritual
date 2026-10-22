@@ -22,8 +22,9 @@ done for today", "close the week".
 
 Pending items live in four sections by what to do with them: `## Now` (ordered, up to 7),
 `## Blocked` (waiting on someone), `## Deferred` (skipped on purpose, with a reason), `## Debt`.
-Every done item carries its evidence or says *delivered, not exercised*; every pending item says
-whether it was *measured* or *assumed*. A date on an item is context, never a nag.
+Every done item carries its evidence or says *delivered, not exercised* — and that goes to a
+`## To exercise` section, each item with the proof that closes it, until someone sees it run.
+Every pending item says whether it was *measured* or *assumed*. A date is context, never a nag.
 
 ## Install
 
@@ -89,7 +90,8 @@ plugin by version and keeps running the old one otherwise. To get a new version:
 /plugin install session-ritual@session-ritual
 ```
 
-Tests: `bash tests/session-start.tests.sh`, `bash tests/session-hook.tests.sh`, and
+Tests: `bash tests/session-start.tests.sh`, `bash tests/session-hook.tests.sh`,
+`bash tests/format-contract.tests.sh`, and
 `powershell -NoProfile -ExecutionPolicy Bypass -File tests\session-start.tests.ps1`.
 
 ## Em português

@@ -32,8 +32,8 @@ In `SESSION_STATE.md`, section `## In progress`, one `###` block for this task:
 ```
 
 **Up to 15 lines.** It **replaces** the block with the same title; creates it if absent; leaves
-other blocks alone (parallel sessions). Nothing else in the STATE is touched, except pending
-lines already deleted during the session. On a feature branch, same (`../../references/branches.md`).
+other blocks alone (parallel sessions). Nothing else in the STATE is touched, except pending and
+`## To exercise` lines already deleted during the session. On a feature branch, same (`../../references/branches.md`).
 
 ## 4. The LOG sub-block
 
