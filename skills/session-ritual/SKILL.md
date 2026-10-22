@@ -87,6 +87,9 @@ decide qual: **foco declarado** (o usuário já disse o que quer fazer — "hoje
 
    ### Pendências e histórico relevante
    [pendências do SESSION_STATE.md + o que das últimas entradas do LOG impacta hoje]
+
+   ### A exercitar (N)
+   [cada item de "A exercitar" com a prova, uma linha; omitir a seção se vazia]
    ```
 
    Feche propondo, não perguntando em aberto: o item 1 de "Próxima sessão" é o foco
@@ -100,6 +103,7 @@ decide qual: **foco declarado** (o usuário já disse o que quer fazer — "hoje
    - [linhas do script que importam: pull falhou, commits depois do último fechamento,
      ahead/behind, arquivos modificados. Repo limpo e em dia = uma linha]
    - [o que do STATE e do LOG toca o foco: pendência ligada, decisão recente, evidência]
+   - [item de "A exercitar" que o trabalho do foco pode provar de passagem, com a prova]
    - [se o foco não está em "Próxima sessão": "não estava planejado; entra na frente de
      X" — uma frase, sem pedir justificativa]
    ```
@@ -189,6 +193,10 @@ linha naquele momento, em edição de uma linha, sem commit próprio — o check
 resto é do fim de sessão. O fim fica mais barato porque parte do STATE já está certo,
 e um terminal fechado sem ritual perde menos.
 
+Vale igual para "A exercitar": a prova aconteceu, a linha sai na hora, e o ponteiro
+da evidência fica anotado para o fim levar ao "Estado atual". Prova que falhou também
+tira a linha — vira pendência medida, com o que se viu.
+
 ## Checkpoint (`/session-checkpoint`)
 
 Para a sessão que se divide em partes no mesmo dia — a conversa migrou de assunto, o
@@ -217,7 +225,7 @@ Depois:
    Push é opcional aqui; é obrigatório no fim.
 
 **O checkpoint não reescreve o `SESSION_STATE.md`** (só leva junto as linhas de
-pendência já apagadas durante a sessão), **não roda extensão e não roda nada caro.** No `/session-end` seguinte, a entrada do dia é reescrita **absorvendo** os
+pendência e de "A exercitar" já apagadas durante a sessão), **não roda extensão e não roda nada caro.** No `/session-end` seguinte, a entrada do dia é reescrita **absorvendo** os
 checkpoints: os sub-blocos `### checkpoint` somem e o conteúdo vira os bullets normais
 da entrada. Nenhum checkpoint sobrevive a um fim de sessão.
 
@@ -266,9 +274,11 @@ completo?" — decida e avise.
    exercitado*.
 
 2. **Reescrever `SESSION_STATE.md`** dentro das **regras de dieta** (ver "Formato dos
-   arquivos"). Estado atual com o que foi entregue, pendências atualizadas (remova o
-   que fechou, adicione o que surgiu), próxima sessão com o plano. É uma foto do agora,
-   não um diário: se algo não é mais verdade, some. Atualize `ultima-sessao` no
+   arquivos"). Estado atual com o que foi entregue e provado, "A exercitar" com o que
+   foi entregue sem prova (cada *Feito, não exercitado* do LOG de hoje vira uma linha
+   ali), pendências atualizadas (remova o que fechou, adicione o que surgiu), próxima
+   sessão com o plano. É uma foto do agora, não um diário: se algo não é mais verdade,
+   some. Atualize `ultima-sessao` no
    frontmatter; no fim completo, também `ultimo-fechamento-completo`.
 
    **Toda pendência sai marcada com como foi estabelecida** — medida (com o que a
@@ -350,7 +360,9 @@ ultimo-fechamento-completo: AAAA-MM-DD
 
 ## Estado atual
 - <o que está funcionando, com o ponteiro da evidência: execução, commit, query>
-- <o que foi entregue e **nunca exercitado**, dito assim>
+
+## A exercitar
+- <o que foi entregue e nunca rodou> — **prova:** <o que se vê quando roda> (desde DD/MM)
 
 ## Pendências
 - <o que está aberto, com contexto para retomar, marcado (medida) ou (suposta), (desde DD/MM), e (aguardando <quem>) se depende de terceiro>
@@ -358,6 +370,25 @@ ultimo-fechamento-completo: AAAA-MM-DD
 ## Próxima sessão
 - <o que fazer em seguida, em ordem — a ordem aqui manda, não a data da pendência>
 ```
+
+### A exercitar
+
+Entregue não é provado, e o que nunca rodou some do radar: no LOG fica enterrado em
+entradas antigas, no "Estado atual" se mistura com o que funciona. A seção existe para
+isso ficar à vista até alguém ver rodar.
+
+- **A prova é escrita junto com o item, e é uma observação, não uma tarefa:** "o
+  briefing sai sem parada e sem bloco do vault", "a execução grava a linha em
+  `pedidos`" — não "testar o briefing". Sem prova que dê para escrever, não é item a
+  exercitar: é pendência suposta.
+- **Não é fila de trabalho.** Item daqui só entra em "Próxima sessão" se alguém
+  decidir que provar é o trabalho do dia; o normal é ser provado de passagem, por um
+  foco que encosta nele — por isso o briefing com foco o menciona.
+- **Sai quando a prova acontece** (ver "Durante a sessão"), e a evidência vai para o
+  "Estado atual" como ponteiro. Seção vazia sai do arquivo.
+- **STATE de versão anterior:** no primeiro fim de sessão com esta regra, linhas de
+  "Estado atual" ou de "Pendências" que dizem *nunca exercitado* / *não rodou* migram
+  para cá, ganhando a prova.
 
 ### Regras de dieta do STATE
 
@@ -395,7 +426,7 @@ uma linha mude. Escreva a data absoluta: "entregue em 24/08", não "entregue hoj
 ## AAAA-MM-DD — <título curto da sessão>
 - **Resumo:** <uma frase: o que a sessão mudou no projeto — é o que o início lê>
 - **Feito:** ... (com a evidência: teste rodado, query conferida, id da execução)
-- **Feito, não exercitado:** ... (entregue sem prova de que roda; omitir se não houve)
+- **Feito, não exercitado:** ... (entregue sem prova de que roda — cada item vira linha em "A exercitar" do STATE; omitir se não houve)
 - **Decisões:** ... (só o que não é óbvio pelo código; omitir se não houve)
 - **Pendências:** ... (cada uma marcada como medida ou suposta, com a data em que surgiu)
 ```

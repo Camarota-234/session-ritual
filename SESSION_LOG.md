@@ -1,5 +1,12 @@
 # Log de sessões — session-ritual
 
+## 2026-10-22 — v1.4.0: seção `## A exercitar` no STATE
+- **Resumo:** o que foi entregue e nunca rodou ganha seção própria no STATE, cada item com a prova observável que o fecha, em vez de ficar misturado no "Estado atual" ou enterrado no LOG.
+- **Feito:** `SKILL.md` com a seção no template, uma subseção de regras (prova é observação, não tarefa; não é fila de trabalho; sai quando a prova acontece; migração de STATE antigo), o briefing sem foco com `### A exercitar (N)` e o com foco com o item que o foco pode provar, "Durante a sessão" e checkpoint estendidos, passo 2 do fim ligando *Feito, não exercitado* à seção. README, manifests 1.4.0, `id` fora do `marketplace.json`; `claude plugin validate .` passou sem aviso. STATE deste repo migrado para o formato.
+- **Feito, não exercitado:** a 1.4.0 numa sessão real (briefing e fim). Instalada no pc em 22/10.
+- **Decisões:** a contagem fica com o modelo, não com o `session-start.ps1` — o STATE já é lido inteiro, e o script continua só lendo git. Sessão aberta em `C:\vault` com foco declarado provou o início com foco da 1.3.0.
+- **Pendências:** `skill-creator` e notebook seguem (medidas); `description` na listagem (suposta).
+
 ## 2026-10-21 — Licença MIT e topics no GitHub
 - **Resumo:** o repo passa a ter licença MIT e topics, como parte de arrumar o perfil público do autor; nenhuma mudança na skill ou no script.
 - **Feito:** `LICENSE` (MIT, João Guilherme Camarota, 2026) e `"license": "MIT"` no `plugin.json`, versão mantida em 1.3.1; topics `claude-code`, `claude-code-skill`, `ai-agents`, `developer-tools`, `productivity`, `powershell` via `gh repo edit`. Conferido pela API do GitHub e por `claude plugin validate .` (passou com um aviso). Este fechamento rodou pela skill 1.3.1, de uma sessão aberta em `C:\vault`.

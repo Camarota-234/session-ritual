@@ -28,7 +28,8 @@ extensão pessoal escolhe o que roda em cada um (`## Fim leve` / `## Fim complet
 
 O `STATE` tem teto de **120 linhas** e regras de dieta (travas permanentes vão para o
 `CLAUDE.md`, item fechado some, evidência vira ponteiro). Pendência que fecha no meio
-da sessão sai do `STATE` na hora. Cada entrada do `LOG` abre com um bullet `Resumo`, e
+da sessão sai do `STATE` na hora. O que foi entregue e nunca rodou fica numa seção
+`## A exercitar`, cada item com a prova que o fecha, até alguém ver rodar. Cada entrada do `LOG` abre com um bullet `Resumo`, e
 é só ele que o início lê. Data de pendência é contexto, nunca cobrança. Detalhes no
 `SKILL.md`.
 
