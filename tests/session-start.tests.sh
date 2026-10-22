@@ -6,6 +6,7 @@ here=$(cd "$(dirname "$0")" && pwd)
 . "$here/lib.sh"
 script="$here/../scripts/session-start.sh"
 run() { bash "$script" --repo "$1" --no-pull 2>&1; }
+run_pull() { bash "$script" --repo "$1" 2>&1; } # pulls for real; only against a local bare remote
 
 state1x='---
 ultima-sessao: 2000-01-01
@@ -105,6 +106,33 @@ else
     skip 'windows sibling path (no cygpath)'
 fi
 
+# worktree (.git is a file there)
+r=$(make_repo wt-main); wt="$TEST_BASE/wt-feature"; git -C "$r" worktree add -q "$wt" -b feat/wt 2> /dev/null
+o=$(run "$wt")
+assert_no_match "$o" 'Not a git repository' 'worktree: recognized as a repo'
+assert_match "$o" '^- Branch: feat/wt$' 'worktree: branch line'
+r2=$(make_repo wt-withsib); make_state "$r2" "$(printf -- '---\nlast-session: 2000-01-01\n---\n**Sibling repos:** `%s` — a worktree.\n## In progress' "$wt")"
+expect "$([ "$(run "$r2" | grep -c '^### ')" -eq 2 ]; echo $?)" 'worktree as sibling: two blocks'
+
+# behind remote, pull fast-forward, pull diverged (local bare remote, no network)
+r=$(make_repo behind); bare="$TEST_BASE/behind.git"
+git clone -q --bare "$r" "$bare"; git -C "$r" remote add origin "$bare"; git -C "$r" fetch -q origin
+git -C "$r" branch -q --set-upstream-to=origin/main main
+other="$TEST_BASE/behind-other"; git clone -q "$bare" "$other"; git -C "$other" config core.autocrlf false
+echo c > "$other/c.txt"; git -C "$other" add -A; git -C "$other" commit -q -m third; git -C "$other" push -q origin main
+git -C "$r" fetch -q origin
+assert_match "$(run "$r")" '\*\*1 commit\(s\) behind remote\*\*' 'behind remote: behind line'
+o=$(run_pull "$r")
+assert_match "$o" '^- Pull: [^ ]' 'pull ff: pull line without leading spaces'
+assert_no_match "$o" 'Pull failed' 'pull ff: no failure'
+assert_match "$o" '^- Branch: main$' 'pull ff: up to date after the pull'
+echo d > "$r/d.txt"; git -C "$r" add -A; git -C "$r" commit -q -m local
+echo e > "$other/e.txt"; git -C "$other" add -A; git -C "$other" commit -q -m remote2; git -C "$other" push -q origin main
+o=$(run_pull "$r")
+assert_match "$o" '^- \*\*Pull failed\*\* — the repo may be out of date: [^ ]' 'pull diverged: failed line'
+assert_match "$o" '^- Branch: main — \*\*1 commit\(s\) ahead of remote\*\* — \*\*1 commit\(s\) behind remote\*\*$' 'pull diverged: ahead and behind'
+diverged="$r"
+
 # missing repo path
 o=$(bash "$script" --repo "$TEST_BASE/nope" --no-pull 2>&1); rc=$?
 assert_match "$o" 'path does not exist' 'missing repo path: message'
@@ -118,6 +146,9 @@ if [ -n "$ps" ] && command -v cygpath > /dev/null 2>&1; then
     a=$("$ps" -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -wl "$here/../scripts/session-start.ps1")" -Repo "$(cygpath -wl "$r")" -NoPull 2>&1 | tr -d '\r' | tail -n +2)
     b=$(run "$(cygpath -wl "$r")" | tail -n +2)
     if d=$(diff <(printf '%s\n' "$a") <(printf '%s\n' "$b")); then expect 0 'parity with ps1'; else expect 1 'parity with ps1'; printf '%s\n' "$d" | head -20; fi
+    a=$("$ps" -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -wl "$here/../scripts/session-start.ps1")" -Repo "$(cygpath -wl "$diverged")" 2>&1 | tr -d '\r' | tail -n +2)
+    b=$(run_pull "$(cygpath -wl "$diverged")" | tail -n +2)
+    if d=$(diff <(printf '%s\n' "$a") <(printf '%s\n' "$b")); then expect 0 'parity with ps1 (diverged pull)'; else expect 1 'parity with ps1 (diverged pull)'; printf '%s\n' "$d" | head -20; fi
 else
     skip 'parity with ps1 (no PowerShell or cygpath)'
 fi

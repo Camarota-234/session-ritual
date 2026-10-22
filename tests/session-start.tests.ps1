@@ -16,6 +16,9 @@ function Expect([bool]$ok, [string]$msg) {
 function Run([string]$repo) {
     (& powershell -NoProfile -ExecutionPolicy Bypass -File $script -Repo $repo -NoPull 2>&1 | Out-String)
 }
+function RunPull([string]$repo) { # pulls for real; only against a local bare remote
+    (& powershell -NoProfile -ExecutionPolicy Bypass -File $script -Repo $repo 2>&1 | Out-String)
+}
 function New-Repo([string]$name, [string]$branch = 'main') {
     $r = Join-Path $base $name
     New-Item -ItemType Directory -Force $r | Out-Null
@@ -138,6 +141,34 @@ try {
     Expect ($o -match '(?m)^### sibling') 'sibling repos: sibling block named'
     $r = New-Repo 'withsib-pt'; Set-State $r (@('---', 'ultima-sessao: 2000-01-01', '---', ('**Repos-irmãos:** ' + $bt + $sib + $bt + ' — a outra metade.'), '## Próxima sessão') -join "`n")
     Expect (([regex]::Matches((Run $r), '(?m)^### ')).Count -eq 2) 'sibling repos (Repos-irmãos:): two blocks'
+
+    # worktree (.git is a file there)
+    $r = New-Repo 'wt-main'; $wt = Join-Path $base 'wt-feature'
+    git -C $r worktree add -q $wt -b feat/wt 2>$null
+    $o = Run $wt
+    Expect ($o -notmatch 'Not a git repository') 'worktree: recognized as a repo'
+    Expect ($o -match '(?m)^- Branch: feat/wt') 'worktree: branch line'
+    $r2 = New-Repo 'wt-withsib'; Set-State $r2 (@('---', 'last-session: 2000-01-01', '---', ('**Sibling repos:** ' + $bt + $wt + $bt + ' — a worktree.'), '## In progress') -join "`n")
+    Expect (([regex]::Matches((Run $r2), '(?m)^### ')).Count -eq 2) 'worktree as sibling: two blocks'
+
+    # behind remote, pull fast-forward, pull diverged (local bare remote, no network)
+    $r = New-Repo 'behind'; $bare = Join-Path $base 'behind.git'
+    git clone -q --bare $r $bare; git -C $r remote add origin $bare; git -C $r fetch -q origin
+    git -C $r branch -q --set-upstream-to=origin/main main
+    $other = Join-Path $base 'behind-other'; git clone -q $bare $other
+    Set-Content (Join-Path $other 'c.txt') 'c'; git -C $other add -A; git -C $other commit -q -m third; git -C $other push -q origin main
+    git -C $r fetch -q origin
+    Expect ((Run $r) -match '\*\*1 commit\(s\) behind remote\*\*') 'behind remote: behind line'
+    $o = RunPull $r
+    Expect ($o -match '(?m)^- Pull: \S') 'pull ff: pull line without leading spaces'
+    Expect ($o -notmatch 'Pull failed') 'pull ff: no failure'
+    Expect ($o -match '(?m)^- Branch: main\s*$') 'pull ff: up to date after the pull'
+    Set-Content (Join-Path $r 'd.txt') 'd'; git -C $r add -A; git -C $r commit -q -m local
+    Set-Content (Join-Path $other 'e.txt') 'e'; git -C $other add -A; git -C $other commit -q -m remote2; git -C $other push -q origin main
+    $o = RunPull $r
+    Expect ($o -match '(?m)^- \*\*Pull failed\*\* — the repo may be out of date: \S') 'pull diverged: failed line'
+    Expect ($o -notmatch 'NativeCommandError|CategoryInfo|FullyQualifiedErrorId|caractere') 'pull diverged: no PowerShell error noise'
+    Expect ($o -match '(?m)^- Branch: main — \*\*1 commit\(s\) ahead of remote\*\* — \*\*1 commit\(s\) behind remote\*\*') 'pull diverged: ahead and behind'
 
     # missing repo path
     $o = (& powershell -NoProfile -ExecutionPolicy Bypass -File $script -Repo (Join-Path $base 'nope') -NoPull 2>&1 | Out-String)
