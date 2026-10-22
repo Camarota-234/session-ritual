@@ -1,5 +1,5 @@
 ---
-last-session: 2026-10-21
+last-session: 2026-10-22
 last-full-end: 2026-10-21
 ---
 
@@ -35,6 +35,7 @@ The author's personal extension lives in `Camarota-234/claude-config` (`ritual-e
 2. Update the notebook (marketplace, plugin, `sync-global.ps1`) and migrate its repos' STATEs. [1h] (measured 22/10)
 3. `skill-creator` evals and `/skill-doctor` before tagging 2.0.0. [2h] (measured 08/09: never run)
 4. Run `session-start` once without `ritual-extend.md`, to prove nothing from the vault leaks into the base. (measured 08/09: never run)
+5. `/code-review` on the 22/10 diff (`56805e6..03fb840`), not run. [30min] (measured 22/10)
 
 ## Blocked
 - (none)
