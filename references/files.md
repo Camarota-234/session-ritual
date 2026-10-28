@@ -74,18 +74,20 @@ today". An event scheduled is not an event that happened: "the meeting is on 27/
 
 ## Quotas
 
-The STATE is read whole at every start and rewritten whole at every end. Each line costs
-twice. `session-end` checks these before committing; what is cut is already in the LOG.
+The STATE is read whole at every start and rewritten whole at every end, so each line costs
+twice, but a cutting round at the end costs more turns than the lines it saves. Only two limits
+are hard: `## Now` (its order is the priority) and the whole file. The rest are **targets**:
+over one, `session-end` says so in one line and moves on, it does not cut.
 
-| Section | Quota |
+| Section | Limit |
 |---|---|
-| header (frontmatter, title, Scope, Sibling repos) | 10 lines |
-| `## In progress` | 15 lines per `###` block |
-| `## Current state` | 12 bullets, each up to 2 lines |
-| `## To exercise` | 6 items, each up to 2 lines (the item and its proof) |
-| `## Now` | 7 items |
+| header (frontmatter, title, Scope, Sibling repos) | target: 10 lines |
+| `## In progress` | target: 15 lines per `###` block |
+| `## Current state` | target: 12 bullets, each up to 2 lines |
+| `## To exercise` | target: 6 items, each up to 2 lines (the item and its proof) |
+| `## Now` | **hard: 7 items** |
 | `## Blocked`, `## Deferred`, `## Debt` | 1 line per item |
-| **whole file** | **80 lines** |
+| **whole file** | **hard: 120 lines** (what is cut is already in the LOG) |
 
 ## Diet rules
 

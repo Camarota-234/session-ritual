@@ -48,8 +48,8 @@ A photo of now, not a diary: if something is no longer true, it is gone. **A 1.x
   returns to `## Now` where the user says; a new item is born in `## Now` or `## Deferred`.
   Every line ends with `(measured DD/MM)` or `(assumed)`. `## Now` is ordered and has up to 7.
 - Frontmatter: `last-session` = today; on `--full`, also `last-full-end`.
-- **Check the quotas before going on** (header 10, block 15, Current state 12, To exercise 6,
-  Now 7, one line each elsewhere, 80 in all). Over: cut now; what leaves is already in the LOG.
+- **Check the limits** (`files.md`): `## Now` 7 and 120 lines in all are hard, cut now; the
+  section targets are not: over one, say so in one line and move on.
 
 On a feature branch, only this repo's `## In progress` block and the LOG are written
 (`../../references/branches.md`; not when the files live elsewhere). With sibling repos, rewrite the STATE of each repo the
@@ -85,9 +85,8 @@ If `~/.claude/ritual-extend.md` exists: run `## End` on a day's end, `## Full en
 
 ## 7. Commit and push
 
-`git pull --rebase` first (another machine may have pushed; a conflict is resolved, never
-force-pushed). Then `git add` the session's files (code + the two docs, and `docs/sessions/`
-on rotation) and commit:
+`git add` the session's files (code + the two docs, `docs/sessions/` on rotation), commit
+**first**, then `git pull --rebase --autostash` (a conflict is resolved, never force-pushed):
 
 ```
 <type>: <one-line summary of what was done>

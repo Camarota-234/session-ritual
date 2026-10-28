@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Session start, checkpoint and end rituals for Claude Code.",
-    "version": "2.0.1"
+    "version": "2.0.2"
   },
   "plugins": [
     {
       "name": "session-ritual",
       "source": "./",
       "description": "A briefing when you open, a hand-off when you switch task, a record + commit when you close — SESSION_STATE.md and SESSION_LOG.md inside the repo.",
-      "version": "2.0.1",
+      "version": "2.0.2",
       "author": {
         "name": "Camarota-234"
       },

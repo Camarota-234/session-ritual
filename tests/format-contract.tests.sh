@@ -47,7 +47,7 @@ assert_match "$(cat "$root/references/adoption.md")" '## A exercitar.*## To exer
 
 # this repo's own STATE follows the format
 state="$root/SESSION_STATE.md"
-expect "$([ "$(wc -l < "$state")" -le 80 ]; echo $?)" 'own STATE: <= 80 lines'
+expect "$([ "$(wc -l < "$state")" -le 120 ]; echo $?)" 'own STATE: <= 120 lines'
 unknown=$(grep -E '^## ' "$state" | sed 's/^## //' | grep -vE "^($state_headers)$" || true)
 expect "$([ -z "$unknown" ]; echo $?)" "own STATE: only fixed section headers${unknown:+ (found: $unknown)}"
 order=$(grep -E '^## ' "$state" | sed 's/^## //' | tr '\n' '|')

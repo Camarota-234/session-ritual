@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.2 — 2026-10-28
+
+- **STATE limits:** 120 lines in all (was 80) and `## Now` at 7 are the only hard limits; the
+  section quotas became targets that `session-end` reports in one line instead of cutting. The
+  cutting rounds cost more turns than the lines they saved.
+- **Commit before pull:** `session-end` commits first, then `git pull --rebase --autostash`, then
+  pushes. Pulling first failed on the session's own unstaged files.
+
 ## 2.0.1 — 2026-10-22
 
 - **Files kept outside the repo:** a `**Session files:** `<folder>`` line in `CLAUDE.local.md` (or
