@@ -1,5 +1,12 @@
 # Log de sessões — session-ritual
 
+## 2026-10-28 — 2.0.2: STATE de 120 linhas com alvos por seção; commit antes do pull (sessão no constance-flow-dash)
+- **Summary:** o fechamento do dia no Constance precisou de duas rodadas de corte e falhou no pull antes do commit; a 2.0.2 sobe o teto e corrige a ordem.
+- **Done:** `references/files.md` (limites rígidos: 120 linhas e `## Now` 7; o resto vira alvo), `session-end` passo 3 e passo 7 (commit → `pull --rebase --autostash` → push), teste `own STATE <= 120`, CHANGELOG, versão 2.0.2 (`ff42b43`); os três testes verdes; marketplace e plugin atualizados no pc.
+- **Done, not exercised:** nenhum `/session-end` rodou na 2.0.2 (pede restart).
+- **Decisions:** cortar custa mais turnos do que as linhas economizam; 80 linhas ≈ 2,5k tokens, um oitavo de um `CLAUDE.md` grande.
+- **Pending:** exercitar (To exercise); notebook ainda sem a 2.0.
+
 ## 2026-10-22 (2) — 2.0.1 published and installed: 1.4.0 merged as `## To exercise`, 1.x at end, Session files
 - **Summary:** `v2.0` absorbed the 1.4.0 from `origin/main`, went to `main` and was installed on this PC as 2.0.1, with two gaps found in the open Avex sessions closed (1.x STATE at `session-end`; STATE and LOG kept outside the repo).
 - **Done:** merge of `origin/main` (1.4.0) into `v2.0`, old `skills/session-ritual/SKILL.md` dropped; the 1.4.0 `## A exercitar` ported as `## To exercise` (files.md, three skills, quotas, adoption table; `tests/format-contract.tests.sh`); the tests left uncommitted on `v2.0` exposed two real bugs, fixed (`.sh` did not see a worktree, `.ps1` printed error noise on a failed pull); `**Session files:**` in `CLAUDE.local.md`/`CLAUDE.md` read by `.ps1`, `.sh`, hook and skills, `session-end` migrating a 1.x STATE, tests for all of it; `v2.0` fast-forwarded into `main` (`56805e6`), 2.0.1 (`03fb840`) pushed; marketplaces and plugin updated, `claude-config` pushed (`6913c8a`), `sync-global.ps1` run; `avex-connect-hub` declared its vault folder. Evidence: four suites green, `claude plugin validate .` clean, both hooks fired by hand, the installed 2.0.1 skill loaded in a session opened before the update.

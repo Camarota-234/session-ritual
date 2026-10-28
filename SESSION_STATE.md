@@ -1,5 +1,5 @@
 ---
-last-session: 2026-10-22
+last-session: 2026-10-28
 last-full-end: 2026-10-21
 ---
 
@@ -16,6 +16,7 @@ The author's personal extension lives in `Camarota-234/claude-config` (`ritual-e
 - Next step: in a fresh session in this repo run `/session-ritual:session-start` (no 1.x warning expected), `/session-ritual:session-checkpoint` on a dummy task, open a fresh session with that focus, then `/session-ritual:session-end --full`; log every mismatch with the spec as the first 2.0 bugs.
 
 ## Current state
+- **2.0.2 instalado no pc (28/10, `ff42b43`):** 120 linhas e `## Now` 7 como limites rígidos; o resto vira alvo; commit antes do pull. Por quê: `C:aulteferencia\contexto-do-inicio-de-sessao.md`.
 - **2.0.0 on `main`** (22/10, `56805e6`; built 21/10 from `d2c362d`): three skills (`session-start`, `session-checkpoint`, `session-end`), `references/` (files, adoption, multi-repo, branches, extension), `scripts/session-start.ps1` and `.sh` with identical output, `hooks/hooks.json` → `scripts/session-hook.sh`, README in English, CHANGELOG, MIT. `claude plugin validate .` passes clean.
 - Tests green on 21/10: `tests/session-start.tests.ps1` (30 checks), `tests/session-start.tests.sh` (parity with the ps1 included), `tests/session-hook.tests.sh`.
 - `origin/main` 1.4.0 (`1d3db50`) merged into `v2.0` on 22/10, manifests stay 2.0.0. Its `## A exercitar` is ported as `## To exercise` (`references/files.md`, the three skills, `tests/format-contract.tests.sh`; green 22/10).
@@ -23,6 +24,8 @@ The author's personal extension lives in `Camarota-234/claude-config` (`ritual-e
 - Installed on this PC: 2.0.1 (22/10, bumped because the plugin cache is keyed by version). Notebook: 1.3.0.
 
 ## To exercise
+- 2.0.2 (STATE 120 linhas, alvos por seção, commit antes do pull) — **proof:** um `/session-end` com o STATE acima de
+  um alvo só avisa, sem rodada de corte, e commita antes do `pull --rebase --autostash` (since 28/10)
 - The three 2.0 skills in a real session — **proof:** `/session-ritual:session-start`, `-checkpoint` and `-end` run after reinstall with no 1.x warning (since 21/10)
 - The hook under Claude Code — **proof:** a fresh session in a repo with a STATE opens with the `# Session start by hook` block (since 21/10)
 - The 1.x → 2.0 migration done by the skill — **proof:** a 1.x STATE in another repo gets the migration offer and a one-commit result (since 21/10)
