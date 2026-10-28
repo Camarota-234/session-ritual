@@ -16,7 +16,7 @@ The author's personal extension lives in `Camarota-234/claude-config` (`ritual-e
 - Next step: in a fresh session in this repo run `/session-ritual:session-start` (no 1.x warning expected), `/session-ritual:session-checkpoint` on a dummy task, open a fresh session with that focus, then `/session-ritual:session-end --full`; log every mismatch with the spec as the first 2.0 bugs.
 
 ## Current state
-- **2.0.2 instalado no pc (28/10, `ff42b43`):** 120 linhas e `## Now` 7 como limites rígidos; o resto vira alvo; commit antes do pull. Por quê: `C:aulteferencia\contexto-do-inicio-de-sessao.md`.
+- **2.0.2 instalado no pc (28/10, `ff42b43`):** 120 linhas e `## Now` 7 como limites rígidos; o resto vira alvo; commit antes do pull. Por quê: `C:\vault\referencia\contexto-do-inicio-de-sessao.md`.
 - **2.0.0 on `main`** (22/10, `56805e6`; built 21/10 from `d2c362d`): three skills (`session-start`, `session-checkpoint`, `session-end`), `references/` (files, adoption, multi-repo, branches, extension), `scripts/session-start.ps1` and `.sh` with identical output, `hooks/hooks.json` → `scripts/session-hook.sh`, README in English, CHANGELOG, MIT. `claude plugin validate .` passes clean.
 - Tests green on 21/10: `tests/session-start.tests.ps1` (30 checks), `tests/session-start.tests.sh` (parity with the ps1 included), `tests/session-hook.tests.sh`.
 - `origin/main` 1.4.0 (`1d3db50`) merged into `v2.0` on 22/10, manifests stay 2.0.0. Its `## A exercitar` is ported as `## To exercise` (`references/files.md`, the three skills, `tests/format-contract.tests.sh`; green 22/10).
